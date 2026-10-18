@@ -13,7 +13,7 @@
   1. **Generation 1 (17+3 Agent Star-Topology SDLC Engine):** [MONaser04/Zyren-AI-Dev-Team-I](https://github.com/MONaser04/Zyren-AI-Dev-Team-I)
   2. **Generation 2A (Domain-Agnostic NVIDIA NeMo Execution Chassis):** [MONaser04/Zyren-NeMo-Chassis](https://github.com/MONaser04/Zyren-NeMo-Chassis)
   3. **Generation 2B (Dual-Brain Multimodal Liaison & Switchyard Router):** [MONaser04/Zyren-AI-Dev-Team](https://github.com/MONaser04/Zyren-AI-Dev-Team)
-  4. **Generation 3 (Autonomous Prototyping & Engineering Runtime):** **ŽyrenClaw** (Customized OpenClaw `v2026.8.2` + **LangClaw** `v0.4.0` Sidecar Engine) — *Deployment configuration in `~/.openclaw/`; open-source scaffold: [MONaser04/ZyrenClaw](https://github.com/MONaser04/ZyrenClaw)*
+  4. **Generation 3 (Autonomous Prototyping & Engineering Runtime):** **ŽyrenClaw** (Decoupled OpenClaw Architecture + **LangClaw** `v0.4.0` Sidecar Engine) — *Continuously updated with official upstream releases (including `v2026.10.x+`) without breaking custom UI, gateway, or multi-agent topologies; open-source scaffold: [MONaser04/ZyrenClaw](https://github.com/MONaser04/ZyrenClaw)*
 
 ---
 
@@ -77,13 +77,13 @@ Unlike naive linear chains, `Zyren-AI-Dev-Team-I` implemented two distinct routi
 1. **Orchestration Layer (`src/orchestrator/graph.py` — 1,148 lines & `semantic_router.py`):**
    - **6-Domain Semantic Router:** Classifies incoming requests across `software_engineering`, `deep_research`, `media_production`, `conversational`, `system_command`, and `os_command`.
    - **Complexity Sub-Routing & Dual-Track Execution:** Within `software_engineering`, tasks are sub-classified into:
-     - **Fast Lane (`SIMPLE` + high confidence):** Routes directly through `Coder` $\rightarrow$ `Tester` $\rightarrow$ `Grounded Critic`.
-     - **Full SDLC Lane (`MEDIUM` / `COMPLEX`):** Routes through the **Supervisor Star Topology** (`Product Analyst` $\rightarrow$ `Planner` $\rightarrow$ `Architect` $\rightarrow$ **Parallel DAG Fan-out** across `UX`, `DB Engineer`, `Security`, `Researcher`, and `Coder` $\rightarrow$ **Fan-in** at `Integrator` $\rightarrow$ `Docs` $\rightarrow$ `Tester` $\rightarrow$ `Grounded Critic`).
-   - **Grounded Feedback Loop & Right of Rebuttal:** Grounded in MIT Press/TACL research demonstrating that LLMs cannot reliably self-correct without external signals, the `Tester` executes real tools (`pytest`, `mypy`, `ruff`, `bandit`) first. If the `Grounded Critic` issues a `BLOCK` (using a 3-tier escalation ladder: *Soft* $\rightarrow$ *Firm* $\rightarrow$ *Hard*), the `Coder` can exercise a **Right of Rebuttal** (`RebuttalRequest`) once per iteration if the critique is a false positive. Unresolved deadlocks after 3 iterations trigger the **Human-in-the-Loop Break-Glass Protocol** (`src/orchestrator/hitl.py`).
+     - **Fast Lane (`SIMPLE` + high confidence):** Routes directly through `Coder` → `Tester` → `Grounded Critic`.
+     - **Full SDLC Lane (`MEDIUM` / `COMPLEX`):** Routes through the **Supervisor Star Topology** (`Product Analyst` → `Planner` → `Architect` → **Parallel DAG Fan-out** across `UX`, `DB Engineer`, `Security`, `Researcher`, and `Coder` → **Fan-in** at `Integrator` → `Docs` → `Tester` → `Grounded Critic`).
+   - **Grounded Feedback Loop & Right of Rebuttal:** Grounded in MIT Press/TACL research demonstrating that LLMs cannot reliably self-correct without external signals, the `Tester` executes real tools (`pytest`, `mypy`, `ruff`, `bandit`) first. If the `Grounded Critic` issues a `BLOCK` (using a 3-tier escalation ladder: *Soft* → *Firm* → *Hard*), the `Coder` can exercise a **Right of Rebuttal** (`RebuttalRequest`) once per iteration if the critique is a false positive. Unresolved deadlocks after 3 iterations trigger the **Human-in-the-Loop Break-Glass Protocol** (`src/orchestrator/hitl.py`).
 
 2. **SmartGateway & Bayesian Model Routing (`src/gateway/smart_gateway.py` — 735 lines):**
    - All LLM calls pass through `SmartGateway` and `AutoModelRegistry` (`model_registry.py`, 814 lines) supporting **10 Provider Adapters** (`OpenAI`, `Anthropic`, `Google Vertex`, `NVIDIA NIM`, `Azure OpenAI`, `AWS Bedrock`, `Ollama`, `Together AI`, `Fireworks AI`, `Groq`).
-   - **6-Factor Routing & Thompson Sampling:** `SmartRouter` selects models based on Task Complexity, Required Capabilities, Cost Budget (`CostTracker`), Availability (`CircuitBreaker`, `FallbackChain`, `RateLimiter`, `HealthMonitor` in `src/resilience/`), Manual Overrides, and **Bayesian Model Quality Tracking** (`bayesian_tracker.py`), which maintains a $\text{Beta}(\alpha, \beta)$ distribution per model calibrated offline against an **80-question golden dataset** (`golden_dataset.json`).
+   - **6-Factor Routing & Thompson Sampling:** `SmartRouter` selects models based on Task Complexity, Required Capabilities, Cost Budget (`CostTracker`), Availability (`CircuitBreaker`, `FallbackChain`, `RateLimiter`, `HealthMonitor` in `src/resilience/`), Manual Overrides, and **Bayesian Model Quality Tracking** (`bayesian_tracker.py`), which maintains a `Beta(α, β)` distribution per model calibrated offline against an **80-question golden dataset** (`golden_dataset.json`).
 
 ```mermaid
 flowchart TD
@@ -118,7 +118,7 @@ flowchart TD
 ### 1.5 Why Generation 1 Prompted Architectural Rethinking
 Building `Zyren-AI-Dev-Team-I` from scratch provided exhaustive mastery over event-sourced state (`src/state/`), strict Pydantic v2 contracts (`src/contracts/schemas.py`, 797 lines), MCP tool governance (`src/tools/`), episodic Qdrant + semantic memory (`src/memory/`), and OpenTelemetry GenAI tracing (`src/observability/`). However, operating a 17-to-20 agent roster revealed fundamental scaling bottlenecks:
 * **Coordination Overhead & Latency:** Routing across 17 specialized roles—even with a central Supervisor and Fast/Full lanes—consumed massive token budgets and multi-minute latencies in inter-agent serialization before producing working application files.
-* **Context Degradation Across Handoffs:** Passing specifications from `Product Analyst` $\rightarrow$ `Planner` $\rightarrow$ `Architect` $\rightarrow$ `UX` / `DB` / `Coder` $\rightarrow$ `Integrator` introduced cumulative semantic loss.
+* **Context Degradation Across Handoffs:** Passing specifications from `Product Analyst` → `Planner` → `Architect` → `UX` / `DB` / `Coder` → `Integrator` introduced cumulative semantic loss.
 
 ---
 
@@ -135,15 +135,15 @@ This phase was split into two repositories: first building a reusable, domain-ag
 * **Verified Subsystems (`src/` & `config/`):**
   1. **Immutable Pydantic v2 Contracts (`src/contracts/`):** Content-addressed `ArtifactItem` (with automatic SHA-256 checksum deduplication), `NodePayload` envelopes with `correlation_id` tracking, `ExecutionSignal` (`CONTINUE`, `HALT`, `RETRY`, `BRANCH`), `ValidationDecision`, and discriminated unions (`polymorphic.py`: `NIMModelInput`, `RepoSourceInput`).
   2. **SQLite WAL Event-Store & Session Recovery (`src/state/`):** Asynchronous `aiosqlite` event store in Write-Ahead Logging (WAL) mode (`event_store.py`) implementing the `nemo-rl-session-memory` durable recovery pattern (capable of exporting full session bundles: `session_state.md`, `timeline.md`, `handoff.md`, `files.md`).
-  3. **Dual-Mode NIM Client & Rate-Limiting (`src/infrastructure/`):** `NIMClient` (`nim_client.py`) with automatic truncated-response continuation (`auto_continue_truncated=True`) and dual rate-limiting (`rate_limiting.py`): `TokenBucket` for burst workloads and `StrictRateLimiter` (enforcing exact $60/\text{max\_rpm}$ second spacing) to prevent HTTP 429 drops on cloud NIM tiers, alongside `GitOps` (`git_ops.py`) for parallel cloning of 180+ NVIDIA blueprint repositories (`config/repos.yaml`).
+  3. **Dual-Mode NIM Client & Rate-Limiting (`src/infrastructure/`):** `NIMClient` (`nim_client.py`) with automatic truncated-response continuation (`auto_continue_truncated=True`) and dual rate-limiting (`rate_limiting.py`): `TokenBucket` for burst workloads and `StrictRateLimiter` (enforcing exact `60 / max_rpm` second spacing) to prevent HTTP 429 drops on cloud NIM tiers, alongside `GitOps` (`git_ops.py`) for parallel cloning of 180+ NVIDIA blueprint repositories (`config/repos.yaml`).
   4. **NeMo Guardrails & Nemotron Governance (`src/governance/`):** `GuardrailsEngine` wrapping `RunnableRails` and Colang flows (`config/rails/`), `PolicyGenerator` translating natural-language rules into 22 Nemotron V2 safety categories (`config/policies/v2_taxonomy.yaml`) across 8 deployment archetypes (`archetypes.yaml`), and a `DeprecationRegistry` (`nims.deprecated.yaml`) blocking 31 deprecated NIM identifiers at runtime.
-  5. **LangGraph Engine, Test-Time Compute & Process-Group Sandbox (`src/runtime/` & `src/sandbox/`):** `WorkflowEngine` (`engine.py`) wrapping LangGraph `StateGraph` with `NeMoRelayIntegration` (`ContextVar` scope isolation across async threads), `TTCExecutor` (`ttc.py`) for Test-Time Compute (majority voting / best-of-$N$ selection), and `SandboxRunner` (`runner.py`) using OS process groups (`os.killpg` + `SIGKILL`) for clean zombie reaping.
+  5. **LangGraph Engine, Test-Time Compute & Process-Group Sandbox (`src/runtime/` & `src/sandbox/`):** `WorkflowEngine` (`engine.py`) wrapping LangGraph `StateGraph` with `NeMoRelayIntegration` (`ContextVar` scope isolation across async threads), `TTCExecutor` (`ttc.py`) for Test-Time Compute (majority voting / best-of-N selection), and `SandboxRunner` (`runner.py`) using OS process groups (`os.killpg` + `SIGKILL`) for clean zombie reaping.
   6. **Tri-Protocol Observability (`src/observability/`):** Simultaneous export to **ATOF** (`events.jsonl`), **ATIF v1.7 trajectories** (`ATIFTrajectorySubscriber`), and **OpenTelemetry** (`OpenTelemetryExporter`).
   7. **NVIDIA AI Workbench Native Spec (`.project/spec.yaml`):** Built on `nvcr.io/nvidia/ai-workbench/python-basic:1.0.9` with automated `preBuild.bash`, `postBuild.bash`, and `onStart.bash` container lifecycle hooks.
 
 ### 2.3 Generation 2B: `Zyren-AI-Dev-Team` & The Dual-Brain Liaison Architecture
 * **Repository:** [MONaser04/Zyren-AI-Dev-Team](https://github.com/MONaser04/Zyren-AI-Dev-Team)
-* **Consolidation Target (17 Agents $\rightarrow$ 6 Agents):** Guided by 2026 industry research from NVIDIA and Google demonstrating that smaller, consolidated agent teams outperform sprawling swarms by eliminating handoff entropy, the new environment was planned around **6 core agents** instead of 17.
+* **Consolidation Target (17 Agents → 6 Agents):** Guided by 2026 industry research from NVIDIA and Google demonstrating that smaller, consolidated agent teams outperform sprawling swarms by eliminating handoff entropy, the new environment was planned around **6 core agents** instead of 17.
 * **What Was Engineered in `Zyren-AI-Dev-Team` Before the OpenClaw Pivot:**
   Built directly atop the `Zyren-NeMo-Chassis`, development of `Zyren-AI-Dev-Team` began by engineering the centerpiece human-swarm coordinator: the **Dual-Model Liaison Agent (`src/agents/liaison/`)** and the **Switchyard Model Router (`src/routing/router.py`)**:
   1. **Brain 1 — The Real-Time Voice & Multimodal Facade (`src/agents/liaison/voice/facade.py`):**
@@ -151,8 +151,8 @@ This phase was split into two repositories: first building a reusable, domain-ag
      - Full asynchronous audio/video streaming pipeline (`audio_pipeline.py` at 16kHz PCM input / 24kHz output, `video_pipeline.py` at 1 FPS JPEG screen/camera streaming, `transcription.py`, and `SessionResumptionManager` automatically seamlessly resuming sessions at the 840s/900s boundary).
   2. **Brain 2 — The Deep Reasoning Text Core (`src/agents/liaison/reasoning/core.py`):**
      - Powered by **NVIDIA NIM Endpoints** routed through **`SwitchyardRouter`** (`src/routing/router.py` & `config/models.yaml`):
-       - `reasoning` target $\rightarrow$ `nvidia/nemotron-3-ultra-550b-a55b` (`rate_limit_mode: "strict"`, 40 RPM).
-       - `coding` / `fast` / `default` targets $\rightarrow$ `nvidia/nemotron-3.5-lightning-30b-a3b` (`rate_limit_mode: "token_bucket"`, 40 RPM).
+       - `reasoning` target → `nvidia/nemotron-3-ultra-550b-a55b` (`rate_limit_mode: "strict"`, 40 RPM).
+       - `coding` / `fast` / `default` targets → `nvidia/nemotron-3.5-lightning-30b-a3b` (`rate_limit_mode: "token_bucket"`, 40 RPM).
      - Includes multi-pattern regex **Thinking Extraction** (`_extract_thinking` in `core.py`), stripping `<thought>` / `<thinking>` blocks from user-facing replies while preserving internal reasoning traces in the `EventStore`, alongside cross-session conversation persistence via `.liaison_session`.
   3. **Strict Consensus Dispatch Gate (`src/agents/liaison/dispatch_gate.py`):**
      - Implements `PlannerDispatchGate` and `ConversationStateTracker`, preventing premature task execution by gating `request_planner_dispatch` until either an explicit user command (`"send to planner/system/company"`) or verified multi-turn specification consensus is confirmed.
@@ -165,9 +165,9 @@ This phase was split into two repositories: first building a reusable, domain-ag
 While in the early stages of expanding `Zyren-AI-Dev-Team` toward its 6-agent target, parallel research was conducted into **OpenClaw's** evolving capabilities—specifically triggered by NVIDIA's research and release of **NemoClaw** (which wraps OpenClaw inside isolated **NVIDIA OpenShell** containers with security guardrails and policy enforcement).
 
 * **Hardware Reality Check:** Evaluating NemoClaw revealed that running its full isolated container/micro-VM stack required local compute and memory resources beyond the workstation's 16GB RAM envelope.
-* **The Pivot:** Rather than forcing an overweight container stack onto constrained hardware, the decision was made to return to the already-installed native **OpenClaw** (`v2026.8.2`) and bring **Antigravity** (using Google **Gemini 3.6 / 3.7 / 3.8 Flash** and Claude models) directly into the workflow to re-architect the local OpenClaw environment into a rock-solid production system.
+* **The Pivot:** Rather than forcing an overweight container stack onto constrained hardware, the decision was made to return to native **OpenClaw** (continuously maintained in sync with official upstream releases) and bring **Antigravity** (using Google **Gemini 3.6 / 3.7 / 3.8 Flash** and Claude models) directly into the workflow to re-architect the local OpenClaw environment into a rock-solid autonomous system.
 
-### 3.2 Rebranding & Decoupled Upstream Engineering: OpenClaw $\rightarrow$ ŽyrenClaw
+### 3.2 Rebranding & Decoupled Upstream Engineering: OpenClaw → ŽyrenClaw
 **Žyren** is not the name of a single repository—it is the author's overarching identity and brand across all software architectures, developer tools, and gaming platforms. Accordingly, the local OpenClaw installation was transformed into **ŽyrenClaw**:
 
 1. **Visual Identity & "Ž" Monogram:** The control dashboard UI (`~/.openclaw/ui/`) and agent avatars in `openclaw.json` were restyled with the custom **Žyren "Ž" logo** and dark `"knot"` theme.
@@ -176,7 +176,7 @@ While in the early stages of expanding `Zyren-AI-Dev-Team` toward its 6-agent ta
    zyrenclaw gateway
    ```
    When `zyrenclaw gateway` is invoked, it executes `~/.openclaw/ensure-gateway.js`, which verifies HTTP health on `http://127.0.0.1:18789/`, runs `sqlite-self-heal.js` to clear any stale SQLite lock states, and starts the `"OpenClaw Gateway"` background daemon. For all other CLI flags, `zyrenclaw.ps1` forwards arguments transparently to `node_modules/openclaw/openclaw.mjs`.
-3. **Zero-Breakage Upstream Coexistence:** Crucially, this transformation was engineered **without forking or mutating OpenClaw's core backend engine**. By keeping the backend runtime (`openclaw.mjs`) intact and applying the **ŽyrenClaw** identity at the CLI wrapper, UI presentation, and configuration layers (`openclaw.json`), the system remains **100% compatible with continuous official OpenClaw updates**—receiving upstream engine improvements and patches without ever breaking the custom ŽyrenClaw environment.
+3. **Continuous Upstream Compatibility:** Crucially, this transformation was engineered **without forking or freezing OpenClaw's core engine**. By keeping the backend runtime (`openclaw.mjs`) unmodified and isolating all **ŽyrenClaw** identity customizations to the CLI wrapper (`zyrenclaw`), UI presentation theme, and configuration layers (`openclaw.json`), the system **seamlessly receives continuous official upstream updates** (such as active `v2026.10.x+` releases) via `npm` without ever breaking custom agent topologies, gateway scripts, or branding.
 
 ---
 
@@ -232,7 +232,7 @@ Because native OpenClaw isolates agent sessions by default, agents suffered from
    - Whenever `zyren-dev-team` initiates a project or spawns a branch, it synchronously commits state via `langclaw_engine__langclaw_memory_upsert` (`PROJECT_STATE`, `BRANCH_TASK_<ID>`, `MILESTONE_<FILE>`), and queries active state via `langclaw_engine__langclaw_memory_search`.
    - If a subagent deadlocks 3 consecutive times, `langclaw_engine__langclaw_replan_deadlock` generates a targeted recovery plan without wiping working files.
 2. **In-Process Hybrid Vector + Lexical Memory (`memory_substrate.py`):**
-   - Uses embedded **`sqlite-vec` (`v0.1.9`)** (`vec_memory_chunks` with 1536-dim cosine similarity) paired with SQLite **`FTS5`** (`BM25` keyword indexing) fused via **Reciprocal Rank Fusion (RRF, $k=60$)**—consuming **<5MB RAM** instead of 1.5GB+ external vector databases.
+   - Uses embedded **`sqlite-vec` (`v0.1.9`)** (`vec_memory_chunks` with 1536-dim cosine similarity) paired with SQLite **`FTS5`** (`BM25` keyword indexing) fused via **Reciprocal Rank Fusion (RRF, k=60)**—consuming **<5MB RAM** instead of 1.5GB+ external vector databases.
 3. **Context Compaction & Pre-Compaction Memory Flush (`context_compactor.py`):**
    - Uses `tiktoken` BPE token accounting (`soft_threshold_tokens: 3000`, `hard_threshold_tokens: 6000`), prunes stale historical tool outputs while preserving `recentTurnsPreserve: 3`, and flushes durable architectural facts to `MEMORY.md` before sliding-window summarization.
 4. **Hardened Polyglot Execution Sandbox & Watchdog (`execution_bridge.py` & `RUNBOOK.md`):**
@@ -277,17 +277,17 @@ The following matrix contrasts the empirical performance, architectural topology
 |---|---|---|---|
 | **Active Agent Roster** | 17 SDLC Roles + 3 Operational Roles (20 total) | 2 Unified Core Roles (Voice Facade + Reasoning Core) | **5 Agents** (1 Coordinator Hub + 4 Leaf Specialists) |
 | **Orchestration Topology** | Supervisor Star Topology with Parallel DAG Fan-Out / Fan-In | Asynchronous Dual-Brain Switchyard Router | **Strict Hub-and-Spoke** (Zero Peer-to-Peer Mesh) |
-| **Decomposition Strategy** | Horizontal Layer Splitting (PRD $\rightarrow$ Arch $\rightarrow$ Coder/UX/DB) | Micro-Kernel Tool Dispatch | **Vertical Feature Slicing** (Cohesive Walking Skeletons) |
-| **Context & Token Overhead** | $O(N^2)$ message cascades; >30% semantic degradation across handoffs | Audio stream buffers; bounded single-turn sliding window | **$O(N)$ Hub-and-Spoke**; in-process RRF vector/FTS5 memory (<5MB RAM) with pre-compaction flushing |
+| **Decomposition Strategy** | Horizontal Layer Splitting (PRD → Arch → Coder/UX/DB) | Micro-Kernel Tool Dispatch | **Vertical Feature Slicing** (Cohesive Walking Skeletons) |
+| **Context & Token Overhead** | O(N²) message cascades; >30% semantic degradation across handoffs | Audio stream buffers; bounded single-turn sliding window | **O(N) Hub-and-Spoke**; in-process RRF vector/FTS5 memory (<5MB RAM) with pre-compaction flushing |
 | **Turnaround Latency Profile** | High Latency (multi-stage sequential deliberation, DAG fan-out synchronization, review bottlenecks) | Low Latency (real-time voice streaming with decoupled execution) | **Rapid Turnaround** (single-pass cohesive slice with immediate in-process verification) |
 | **First-Run Code Execution** | Highly Prone to Failure (frequent link-class bugs, broken module imports, desynchronized DOM IDs) | N/A (Infrastructure chassis & voice prototype) | **Consistently Runnable** (guaranteed working Walking Skeleton verified at runtime by Critic) |
 | **Local Infrastructure Footprint** | 1.5GB – 2.5GB RAM (Docker Compose: Postgres, Qdrant, LiteLLM, Jaeger) | <50MB RAM (SQLite WAL, token bucket limiters, AI Workbench) | **<150MB RAM total** (Native Node.js Gateway + embedded `sqlite-vec` sidecar; <5MB for memory store) |
-| **Out-of-Pocket Inference Spend (Prototyping Phase)** | **$0.00** (Free developer tiers & local Ollama fallbacks) | **$0.00** (NVIDIA NIM developer credits & Gemini Live preview) | **$0.00** (Executed within non-commercial **NVIDIA Developer Program** prototyping allocations [`integrate.api.nvidia.com`]) |
+| **Out-of-Pocket Inference Spend (Prototyping Phase)** | **\$0.00** (Free developer tiers & local Ollama fallbacks) | **\$0.00** (NVIDIA NIM developer credits & Gemini Live preview) | **\$0.00** (Executed within non-commercial **NVIDIA Developer Program** prototyping allocations [`integrate.api.nvidia.com`]) |
 | **Failure Recovery Mode** | Full DAG checkpoint rollback; 3-strike escalation to Break-Glass HITL | CircuitBreaker & FallbackProviderChain with backoff | **Same-Session in-memory surgical remediation** via `sessions_send` + 8-streak zero-progress watchdog |
 
 > [!NOTE]
 > **Methodological Note on Evaluation Quotas & Enterprise Cost Accounting:**
-> Out-of-pocket inference expenditure during all benchmark iterations was **$0.00** as execution was conducted strictly within the non-commercial development, prototyping, and evaluation quotas granted under the **NVIDIA Developer Program** (`integrate.api.nvidia.com`) and preview API allocations. Systems research across the Žyren generations prioritized **token entropy minimization, context preservation across handoffs, turnaround latency reduction, and deterministic runtime reliability**. Production-scale enterprise deployments of NVIDIA NIM microservices transition to standard commercial licensing through **NVIDIA AI Enterprise (NVAIE, list price $4,500 per GPU/year)** or authorized cloud partner infrastructure.
+> Out-of-pocket inference expenditure during all benchmark iterations was **\$0.00** as execution was conducted strictly within the non-commercial development, prototyping, and evaluation quotas granted under the **NVIDIA Developer Program** (`integrate.api.nvidia.com`) and preview API allocations. Systems research across the Žyren generations prioritized **token entropy minimization, context preservation across handoffs, turnaround latency reduction, and deterministic runtime reliability**. Production-scale enterprise deployments of NVIDIA NIM microservices transition to standard commercial licensing through **NVIDIA AI Enterprise (NVAIE, list price \$4,500 per GPU/year)** or authorized cloud partner infrastructure.
 
 ### 6.3 Evolution of Benchmark Outcomes Across Generations
 1. **Early Attempts (Horizontal / Fragmented Multi-Agent Splits):**
@@ -308,10 +308,10 @@ The true test of **ŽyrenClaw** occurred during live human playtesting, where na
    - **Autonomous Execution & Critic Verification (Verified in `audit-report.md` & `critic-audit-report.md`):**
      - `zyren-coder` transitioned `html, body` (line 32 of `style.css`) and `.ambient` (line 353) to a rich countryside dusk gradient (`linear-gradient(180deg, #0f172a 0%, #1e3a8a 40%, #f59e0b 76%, #78350f 100%)`), set `#gameCanvas` to `background: transparent` (`style.css:66`), framed the canvas to `max-width: 88vw; max-height: 64vh` (`style.css:63-64`) with a frosted border so the saturated farm elements ring the play area, and rendered a subtle floor gradient in `game.js:687`.
      - `zyren-critic` executed its mandatory deterministic verification via `exec` on Node.js `v24.17.0`:
-       1. `node --check game.js` $\rightarrow$ exit code `0`.
+       1. `node --check game.js` → exit code `0`.
        2. Cross-referenced all **24 `document.getElementById()` targets** in `game.js` against `index.html` (24/24 match).
        3. Verified all **22 declared game functions** (`advanceLevel`, `catchFruit`, `draw`, `endGame`, `ensureAudio`, `explode`, `getCanvasMouseX`, `initAmbient`, `levelComplete`, `loadBest`, `loop`, `loseLife`, `missFruit`, `pickKindForLevel`, `playTone`, `rand`, `resize`, `saveBest`, `setScreen`, `shadeParticleColor`, `showFloat`, `spawnFruit`, `startGame`, `startShake`, `togglePause`, `update`, `updateHUD`).
-       4. Executed a headless Node.js simulation exercising `startGame` $\rightarrow$ `catchFruit` $\rightarrow$ `missFruit` $\rightarrow$ bomb trap (`startShake(12)`) $\rightarrow$ `levelComplete` $\rightarrow$ `advanceLevel` $\rightarrow$ `endGame` (`startShake(16)`) $\rightarrow$ `localStorage` high-score save/restore $\rightarrow$ `togglePause` (`lastTime = null`, surviving a 1s–6s timestamp jump via `Math.min(timestamp - lastTime, 40)`), issuing **`[PASS] / APPROVED` with zero defects**.
+       4. Executed a headless Node.js simulation exercising `startGame` → `catchFruit` → `missFruit` → bomb trap (`startShake(12)`) → `levelComplete` → `advanceLevel` → `endGame` (`startShake(16)`) → `localStorage` high-score save/restore → `togglePause` (`lastTime = null`, surviving a 1s–6s timestamp jump via `Math.min(timestamp - lastTime, 40)`), issuing **`[PASS] / APPROVED` with zero defects**.
 
 ---
 
