@@ -1,0 +1,30 @@
+# Environment and secrets
+.env
+*.env.*
+*.key
+*.pem
+credentials.json
+token.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and runtime caches
+*.log
+logs/
+tmp/
+temp/
+__pycache__/
+*.pyc
+
+# Node & Package Managers
+node_modules/
+.npm/
+
+# Local databases and locks
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.lock

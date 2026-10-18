@@ -1,0 +1,94 @@
+{
+  "$schema": "https://openclaw.ai/schema/openclaw.json",
+  "name": "zyrenclaw-collective",
+  "version": "4.0.0",
+  "description": "ŽyrenClaw 5-Agent Hub-and-Spoke Autonomous Engineering Collective",
+  "gateway": {
+    "port": 18789,
+    "host": "127.0.0.1",
+    "theme": "knot",
+    "auth": {
+      "mode": "local"
+    }
+  },
+  "models": {
+    "providers": {
+      "nvidia": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "${NVIDIA_API_KEY}"
+      }
+    }
+  },
+  "agents": [
+    {
+      "id": "zyren-dev-team",
+      "name": "Žyren Dev Team",
+      "role": "General Coordinator & Dynamic Orchestrator",
+      "model": {
+        "primary": "nvidia/stepfun-ai/step-5-preview",
+        "fallbacks": [
+          "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "nvidia/deepseek-ai/deepseek-v4.1-flash",
+          "nvidia/nemotron-3.5-lightning-30b-a3b"
+        ]
+      },
+      "subAgents": ["zyren-research", "zyren-planner", "zyren-coder", "zyren-critic"],
+      "tools": {
+        "deny": ["exec", "process", "write_file", "edit_file"]
+      },
+      "mode": "hub_and_spoke"
+    },
+    {
+      "id": "zyren-research",
+      "name": "Žyren Deep Research",
+      "role": "Multi-Hop Technical Investigator",
+      "model": {
+        "primary": "nvidia/stepfun-ai/step-5-preview",
+        "fallbacks": [
+          "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "nvidia/deepseek-ai/deepseek-v4.1-flash"
+        ]
+      },
+      "criticExempt": true
+    },
+    {
+      "id": "zyren-planner",
+      "name": "Žyren Planner",
+      "role": "Master Architectural Planner (Walking Skeleton & Vertical Slices)",
+      "model": {
+        "primary": "nvidia/stepfun-ai/step-5-preview",
+        "fallbacks": [
+          "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "nvidia/deepseek-ai/deepseek-v4.1-flash"
+        ]
+      }
+    },
+    {
+      "id": "zyren-coder",
+      "name": "Žyren Coder",
+      "role": "Unified Full-Stack Specialist (Logic + UI/UX Glassmorphism + DB)",
+      "model": {
+        "primary": "nvidia/stepfun-ai/step-5-preview",
+        "fallbacks": [
+          "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "nvidia/deepseek-ai/deepseek-v4.1-flash"
+        ]
+      }
+    },
+    {
+      "id": "zyren-critic",
+      "name": "Žyren Critic",
+      "role": "Deterministic Runtime Quality Gate & Smoke Verifier",
+      "model": {
+        "primary": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "fallbacks": [
+          "nvidia/stepfun-ai/step-5-preview",
+          "nvidia/deepseek-ai/deepseek-v4.1-flash"
+        ]
+      },
+      "tools": {
+        "deny": ["write_file", "edit_file"]
+      }
+    }
+  ]
+}
