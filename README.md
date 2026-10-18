@@ -330,6 +330,20 @@ While **ŽyrenClaw** now reliably delivers cohesive applications, active enginee
    - Expanding closed-loop harness optimization—combining the trajectory evaluation and prompt-tuning foundations from `Zyren-AI-Dev-Team-I` (`optim/`) with OpenClaw's episodic memory (`DREAMS.md`, `MEMORY.md`, and `langclaw` vector substrates) so the swarm autonomously distills lessons from every Critic `[BLOCK]` into permanent operational skills.
 4. **Native Windows OS & GUI Automation via Microsoft UFO (`projects/ufo-automation/`):**
    - Integrating **Microsoft UFO (UI-Focused Agent)**—already actively under development in `projects/ufo-automation/` and `projects/ufo-voice-liaison/` (`live_ufo_bridge.py`)—into the Žyren software ecosystem to bridge code generation with native Windows UI Automation (UIA) and Vision-Language desktop control, enabling the swarm to launch, visually inspect, and operate real desktop applications autonomously.
+## 8. Citation & Attribution
+
+If you reference the Žyren architecture, empirical findings, or benchmark methodology in your research or systems engineering:
+
+```bibtex
+@misc{abouzaid2026zyren,
+  author = {Mohamed Abouzaid},
+  title = {The Žyren Architecture: Engineering Autonomous Multi-Agent Software Swarms},
+  year = {2026},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/MONaser04/ZyrenClaw}}
+}
+```
 
 ---
 
