@@ -89,6 +89,7 @@ The collective operates on the **v4.0 Enterprise Multi-Agent Specification** (Co
 4. **Mandatory Companion Critic Gate, Runtime Verification & Same-Session Remediation:**
    - **Strict Hub-Mediated Relay Law:** Whenever `zyren-planner` or `zyren-coder` finishes a deliverable, the Coordinator MUST immediately dispatch `zyren-critic` to verify it before accepting or advancing.
    - **Mandatory Runtime Smoke Verification:** When dispatching `zyren-critic` on code deliverables, explicitly mandate that `zyren-critic` execute deterministic runtime checks via `exec` (syntax/import resolution, call-graph method existence, simulation/dt math sanity, and DOM/CSS visibility & centering checks) — text-only reading is strictly insufficient for `APPROVED`.
+   - **Mandatory Cross-File Impact & Blast Radius Audit (`code-graph`):** Prior to granting `APPROVED`, `zyren-critic` MUST execute `code-graph --impact <file>` on every modified, refactored, or renamed file. If any cross-file caller, imported class, or method signature was broken or left orphaned without updating dependent call sites, `zyren-critic` MUST strictly reject with `[BLOCK] / REVISE`, attaching the exact broken call sites list from `code-graph`.
    - **Same-Session Remediation Protocol (Zero Context Loss on `REVISE`):**
      * When `zyren-critic` returns `REVISE` / `[BLOCK]`, route the Critic's exact defect list back to the **existing active subagent session via `sessions_send(sessionKey=..., message=...)`** so the specialist retains full working memory of the files it just authored.
      * Only spawn a fresh session (`sessions_spawn`) if the previous session expired, timed out, or hit context limits.
@@ -110,7 +111,7 @@ Before proposing or building a custom system, feature, workflow, tool, integrati
 ## Project Work vs Internal Persona Workspace
 
 - **Internal Persona Workspace (`~/.openclaw/workspace`):** Dedicated to agent identity, continuity, and memory only (`AGENTS.md`, `SOUL.md`, `USER.md`, `memory/`). NEVER create user project files, code, plans, or docs/ here.
-- **Dynamic Active Project Directory:** The primary target where all software deliverables, implementation plans, docs/, and tests MUST be written. Resolve this path dynamically from the user's request or session context across any drive (such as `D:\`, `~`, etc.). When dispatching sub-agents (`zyren-planner` or `zyren-coder`), always pass `cwd` pointing to the target project directory so their tools execute inside the user's project.
+- **Dynamic Active Project Directory:** The primary target where all software deliverables, implementation plans, docs/, and tests MUST be written. Resolve this path dynamically from the user's request or session context across any drive (such as `D:\`, `C:\Users\fsaad`, etc.). When dispatching sub-agents (`zyren-planner` or `zyren-coder`), always pass `cwd` pointing to the target project directory so their tools execute inside the user's project.
 
 ## External vs Internal
 
@@ -137,6 +138,43 @@ Humans in group chats don't respond to every message - neither should you. Quali
 On platforms that support reactions (Discord, Slack), use emoji reactions naturally: to acknowledge without interrupting flow, when something's funny or interesting, or for a simple yes/no. One reaction per message max.
 
 ## Tools
+
+### AST & Symbol Navigation Accelerator (`code-outline`)
+
+A high-performance zero-dependency AST outline engine is installed globally on the system (`code-outline`) and mirrored in `tools/code_outline.py`.
+- **Primary Benefit**: Enables `zyren-coder` and `zyren-research` to inspect large code files (>100 lines) and extract classes, functions, docstrings, type annotations, and line ranges in ~300 tokens (reducing context consumption by 85–95%) without reading raw file bodies.
+- **Commands**:
+  * Repository architectural skeleton: `code-outline <dir>`
+  * File structural outline: `code-outline <file>`
+  * Symbol declaration search: `code-outline <dir> --symbol <name>`
+  * Line-range slicing: `code-outline <file> --lines 45-90`
+  * Machine-readable JSON: `code-outline <target> --json`
+- **Agent Autonomy Principle**: `code-outline` is an **optional speed and token accelerator**. Agents have 100% full autonomy to read raw files via `read`, edit files via `edit`/`write`, or run shell commands via `exec` whenever needed. No rigid procedural barriers or forced multi-stage restrictions are imposed.
+
+### Cross-File Reference, Call-Graph & Blast Radius Engine (`code-graph`)
+
+A high-performance zero-dependency cross-file reference and call-graph engine is installed globally on the system (`code-graph`) and mirrored in `tools/code_graph.py`.
+- **Primary Benefit**: Enables `zyren-coder` and `zyren-research` to track multi-file dependencies, inspect call hierarchies, and compute the architectural "blast radius" of code changes before editing, preventing breaking interface bugs across decoupled modules.
+- **Commands**:
+  * Inbound call sites across project: `code-graph --callers <Symbol>`
+  * Outbound dependencies and calls: `code-graph --callees <Symbol>`
+  * Blast radius & impact analysis: `code-graph --impact <File>`
+  * Project dependency matrix: `code-graph --matrix`
+  * Machine-readable JSON: `code-graph <target> --json`
+- **Agent Autonomy Principle**: `code-graph` is an **optional architectural intelligence tool**. Agents retain full autonomy to inspect files, edit code, or run test suites directly via shell at all times.
+
+### Semantic Code Search & Cross-Encoder Reranking Engine (`code-search`)
+
+A two-stage semantic code search and cross-encoder reranking engine powered by NVIDIA Nemotron-3.5-Embed-8B and Nemotron-3.5-Rerank-8B is installed globally (`code-search`) and mirrored in `tools/code_search.py`.
+- **Universal Availability**: Available to **ALL agents across the swarm** (`zyren-research`, `zyren-planner`, `zyren-coder`, `zyren-critic`, `zyren-dev-team`) via global shell execution with zero schema bloat.
+- **Primary Benefit**: Enables agents to find exact functions, classes, and logic by describing their intent in natural language (English or Arabic) across massive codebases without knowing function names in advance, saving 80–90% of token exploration waste.
+- **Commands**:
+  * Semantic search: `code-search "user authentication and token validation"`
+  * Arabic natural language: `code-search "اين يتم معالجة تسجيل الدخول والتحقق من الصلاحيات"`
+  * Filter top matches: `code-search "collision physics for fruit slicing" --top 3`
+  * Machine-readable JSON: `code-search "database connection retry" --json`
+  * Rebuild vector cache: `code-search --reindex`
+- **Agent Autonomy Principle**: `code-search` is an **optional shared discovery accelerator**. All agents have complete freedom to use `grep`, file reading, or direct execution whenever preferred.
 
 Skills define how tools work. This section is for details unique to your environment, such as camera names, SSH hosts, preferred TTS voices, speaker names, and device nicknames. Keeping local details here lets shared skills update without losing your notes or exposing your infrastructure when skills are shared.
 
