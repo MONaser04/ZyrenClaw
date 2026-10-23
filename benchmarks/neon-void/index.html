@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON VOID</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="hud-row">
+    <div class="stat" id="stat-score">SCORE 0</div>
+    <div class="stat" id="stat-wave">WAVE 1</div>
+    <div class="stat" id="stat-hearts">HEARTS 3</div>
+  </div>
+  <div class="hud-bottom">
+    <div class="combo" id="hud-combo">COMBO x1</div>
+    <div class="combo-bar" id="hud-combo-bar"><div class="combo-fill" id="hud-combo-fill"></div></div>
+    <div class="dash" id="hud-dash">DASH READY</div>
+    <div class="dash-bar" id="hud-dash-bar"><div class="dash-fill" id="hud-dash-fill"></div></div>
+  </div>
+</div>
+
+<div id="menu" class="menu-panel">
+  <h1>NEON VOID</h1>
+  <p class="subtitle">TWIN-STICK ARCADE SURVIVAL</p>
+  <div class="controls">
+    <p>WASD / ARROWS — MOVE</p>
+    <p>MOUSE — AIM</p>
+    <p>CLICK or SPACE — FIRE</p>
+    <p>SHIFT — DASH</p>
+    <p>P — PAUSE | M — MUTE</p>
+  </div>
+  <div class="best">BEST: <span id="menu-best">0</span></div>
+  <div class="start-hint">CLICK or PRESS ENTER TO START</div>
+</div>
+
+<div id="pause" class="menu-panel hidden">
+  <h1>PAUSED</h1>
+  <div class="start-hint">PRESS P OR CLICK TO RESUME</div>
+</div>
+
+<div id="gameover" class="menu-panel hidden">
+  <h1>GAME OVER</h1>
+  <div class="final-stats">
+    <div>FINAL SCORE: <span id="go-score">0</span></div>
+    <div>WAVE REACHED: <span id="go-wave">1</span></div>
+    <div>BEST: <span id="go-best">0</span></div>
+  </div>
+  <div class="start-hint">PRESS R OR CLICK TO RESTART</div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
