@@ -261,31 +261,28 @@ The production **ŽyrenClaw** collective (`v4.0 Spec` in `workspace/zyren-dev-te
 flowchart TD
     User(["👤 Human Operator"]) <--> Hub
 
-    subgraph Hub_Node["1. Central Coordinator & Dynamic Routing Hub"]
-        Hub["⚡ Žyren Dev Team (zyren-dev-team)<br/>• Phase 1: Zero-Dispatch Conversational & Brainstorming Mode<br/>• Phase 2: Dynamic Complexity-Aware Executive Router<br/>• Primary Model: nvidia/stepfun-ai/step-5-preview<br/>• Fallbacks: nemotron-3.5-super-vl-120b, deepseek-v4.1-flash"]
+    subgraph Hub_Node["Central Coordinator & Intent-Driven Routing Hub"]
+        Hub["⚡ Žyren Dev Team (zyren-dev-team)<br/>• Zero-Dispatch Conversational Mode (0 hops, real-time)<br/>• Intent Classifier & Complexity-Aware Dynamic Dispatcher<br/>• Primary Model: nvidia/stepfun-ai/step-5-preview<br/>• Fallbacks: nemotron-3.5-super-vl-120b, deepseek-v4.1-flash"]
     end
 
-    %% Dynamic Tier-Aware Dispatch: Dotted for Conditional, Thick for Primary Fast-Path
-    Hub -.->|"Conditional: On-Demand Deep Docs & Vetting"| Res["🔬 Žyren Deep Research<br/>(zyren-research)"]
-    Hub -.->|"Conditional: Tier 2 Large Repos / Multi-Module DAG"| Plan["📐 Žyren Planner<br/>(zyren-planner)"]
-    Hub ==>|"Tier 1 Fast-Path: Direct Walking Skeleton Slice"| Coder["💻 Žyren Coder<br/>(zyren-coder)"]
-    Hub ==>|"Mandatory Quality Gate: Deterministic Runtime Smoke"| Critic["⚖️ Žyren Critic<br/>(zyren-critic)<br/>Primary: nemotron-3.5-super-vl-120b"]
-
-    Res -.->|Synthesized Knowledge| Hub
-    Plan -.->|Architectural Contracts| Hub
-    Coder -->|Self-Checked Deliverable| Hub
-    Critic -->|PASS: Approved / BLOCK: Revise| Hub
+    %% Intent-Driven Direct Point-to-Point Fast Paths for Each Specialist
+    Hub <==>|"Intent: Pure Research & Vetting (Direct 1-Hop Fast-Path)"| Res["🔬 Žyren Deep Research<br/>(zyren-research)"]
+    Hub <==>|"Intent: Pure System Design & GDD (Direct 1-Hop Fast-Path)"| Plan["📐 Žyren Planner<br/>(zyren-planner)"]
+    Hub <==>|"Intent: Full-Stack Implementation (2-Hop Fast-Path with Critic Gate)"| Coder["💻 Žyren Coder<br/>(zyren-coder)"]
+    Hub <==>|"Intent: Direct Code Review, Security & Smoke Tests (Direct 1-Hop)"| Critic["⚖️ Žyren Critic<br/>(zyren-critic)<br/>Primary: nemotron-3.5-super-vl-120b"]
 ```
 
 > [!IMPORTANT]
-> **Dynamic Complexity-Aware Tier Routing vs. The Static Waterfall Fallacy (Why Latency is ~45–60s, Not Minutes):**  
-> A common misconception when analyzing a 5-agent collective is assuming a rigid, sequential 8-hop waterfall on every feature:  
+> **Dynamic Intent-Driven Point-to-Point Routing vs. The Static Waterfall Fallacy:**  
+> A critical misconception when analyzing a 5-agent collective is assuming a monolithic, sequential 8-hop waterfall where every task must visit every agent in fixed serial order:  
 > `User ➔ Hub ➔ Research ➔ Hub ➔ Planner ➔ Hub ➔ Coder ➔ Hub ➔ Critic ➔ Hub ➔ User` (which would introduce 8 sequential network round-trips and 2–4 minutes of latency).  
-> **ŽyrenClaw explicitly eliminates this waterfall trap.** As formalized in `scaffolds/AGENTS.md` and grounded in latency-aware multi-agent systems research (*LAMaS*, arXiv:2601.10560; *Benchmarking Multi-Agent Architectures*, arXiv:2603.22651), the Hub executes **Dynamic Complexity-Aware Tier Routing**:
-> * **Phase 1: Conversational & Ideation Mode (0 Subagent Hops):** For user queries, clarifications, design discussions, and task definitions, the Hub responds directly in real-time with zero subagents spawned and zero background latency.
-> * **Tier 1 Fast-Path (Small/Medium Features, Web Apps, Games, CLI Tools < 1,500 LOC):** `zyren-research` and `zyren-planner` are **100% bypassed**. The Hub directly dispatches `zyren-coder` to build a unified Walking Skeleton in a single pass, followed immediately by `zyren-critic`'s deterministic runtime smoke test. **Total execution path: exactly 2 subagent hops (~45–60 seconds total turnaround)**.
-> * **Tier 2 Enterprise Pipeline (Large Repositories > 1M Tokens or Multi-Module Distributed Backends):** Only when architectural boundaries, database migrations, or cross-service contracts must be formally partitioned does the Hub conditionally invoke `zyren-planner` to establish a dependency DAG before dispatching isolated Vertical Feature Slices.
-> * **On-Demand Technical Research:** `zyren-research` is an on-demand auxiliary tool spawned exclusively when obscure libraries, external API deprecations, or multi-source documentation vetting are explicitly needed—it is never in the critical latency path of routine feature delivery.
+> **ŽyrenClaw completely rejects this waterfall trap.** As formalized in `scaffolds/AGENTS.md` and grounded in latency-aware multi-agent systems research (*LAMaS*, arXiv:2601.10560; *Benchmarking Multi-Agent Architectures*, arXiv:2603.22651), the Hub executes **Dynamic Intent-Driven Direct Routing** where **each specialist has its own direct point-to-point fast-path based on the user's exact intent**:
+> * **Zero-Hop Direct Conversation (0 ms background overhead):** Conceptual queries, explanations, clarifications, and brainstorming stay entirely inside `zyren-dev-team` without spawning background subagents.
+> * **Direct Research Fast-Path (1 Subagent Hop):** When the request is strictly informational, comparative, or diagnostic (e.g., *"Compare SQLite vector extensions"* or *"Research API deprecations"*), the Hub dispatches **only** `zyren-research`. Zero code or planning hops are executed.
+> * **Direct Code Review & Audit Fast-Path (1 Subagent Hop):** When the request is to audit existing code, run security checks, or execute smoke tests (e.g., *"Audit auth.js for memory leaks"*), the Hub dispatches **only** `zyren-critic` to run its 4-point deterministic verification suite directly without invoking Coder or Planner.
+> * **Direct System Design Fast-Path (1 Subagent Hop):** When the request is purely architectural (e.g., *"Author a Game Design Doc (GDD)"* or *"Draft a database schema"*), the Hub dispatches **only** `zyren-planner`.
+> * **Tier 1 Implementation Fast-Path (2 Subagent Hops, ~45–60s):** For standard software builds (< 1,500 LOC), games, CLI utilities, and bug fixes, Research and Planner are **100% bypassed**. The Hub directly dispatches `zyren-coder` to build a unified Walking Skeleton in a single pass, followed immediately by `zyren-critic`'s deterministic runtime smoke test.
+> * **Tier 2 Enterprise Pipeline (Multi-Module Orchestration):** Only large-scale, multi-repository enterprise architectures (> 1M tokens) conditionally orchestrate across Planner, Coder, and Critic iteratively using formal DAG contracts.
 
 #### Verified Configuration of the 5 Agents in `openclaw.json`
 | # | Agent ID | Display Name & Emoji | Primary & Fallback Models (`openclaw.json`) | Exact Operational Mandate (`AGENTS.md` / `SOUL.md`) |

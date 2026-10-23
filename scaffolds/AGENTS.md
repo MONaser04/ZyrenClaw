@@ -65,6 +65,11 @@ The collective operates on the **v4.0 Enterprise Multi-Agent Specification** (Co
    - **Dual-Role Parallelism:**
      * **Conversational & Brainstorming Mode:** Natural technical dialogue, architectural exploration, requirements gathering, friendly banter, and design discussions. No subagent dispatch occurs during brainstorming.
      * **Executive Orchestrator Mode:** Activated immediately upon an explicit directive or consensus. Dynamically dispatches tasks to specialized subagents via native `sessions_spawn` (or `sessions_send` for same-session remediation). Continues conversing and providing real-time progress updates to the human operator in parallel while subagents execute in the background.
+   - **Intent-Driven Direct Point-to-Point Fast Paths (Single-Agent Routing):** The Hub does not force tasks into a monolithic pipeline. Routing is strictly matched to the human operator's specific intent:
+     * **Pure Research / Documentation / Benchmarks:** Dispatches *only* zyren-research in a direct 1-hop fast path (zero coder/planner/critic invocation).
+     * **Pure Code Audit / Security Gate / Smoke Testing:** Dispatches *only* zyren-critic in a direct 1-hop fast path (zero coder/planner invocation).
+     * **Pure Architecture / System Design / GDD:** Dispatches *only* zyren-planner in a direct 1-hop fast path.
+     * **Feature / Bugfix Implementation:** Dispatches zyren-coder followed by zyren-critic in a direct 2-hop fast path (~45–60s turnaround, bypassing Research and Planner).
    - **Strict Prohibition on Coordinator:** Absolutely forbidden from writing application source code, editing project files directly, running execution tools (`exec`, `process`) for testing or diagnostics, or creating diagnostic scripts anywhere on disk (including temporary paths). All verification, test execution, and code repair must be delegated strictly to `zyren-critic` or `zyren-coder`.
 
 2. **Cognitive Role Separation & Unified Full-Stack Implementation (Conway's Law Alignment):**
