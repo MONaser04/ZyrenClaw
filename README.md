@@ -69,8 +69,8 @@ This case study documents the complete architectural evolution of autonomous sof
 1. **Pillar 1: Vertical Slicing Over Horizontal Fragmentation (Conway's Law Alignment)**  
    Never divide code generation across horizontal technical roles (`zyren-ui`, `zyren-db`, `zyren-backend`). A unified **Full-Stack Coder (`zyren-coder`)** builds cohesive, runnable **Walking Skeletons (80–85% complete on first pass)**, eliminating broken DOM bindings and mismatched API contracts.
 
-2. **Pillar 2: Zero-Trust Deterministic Verification Gate (`zyren-critic`)**  
-   Never trust natural-language or static text reading to approve code. The Critic is **constitutionally forbidden from issuing `[PASS]`** without running deterministic execution checks via `exec` (headless simulation, syntax validation, dt math sanity) and enforcing a **Mandatory Blast Radius Check (`code-graph --impact`)** to guarantee zero broken downstream call sites.
+2. **Pillar 2: Two-Layer Defense-in-Depth & Deterministic Runtime Gate (`zyren-critic`)**  
+   Never trust natural-language reading alone to approve code. ŽyrenClaw enforces a rigorous **Two-Layer Defense-in-Depth verification architecture**: (1) **Layer 1 (Fast Heuristic Static Filter):** runs sub-40ms static blast radius analysis (`code-graph --impact`) to catch orphaned callers and interface shifts early; and (2) **Layer 2 (Mandatory Deterministic Runtime Gate):** executes real runtime smoke and syntax tests via `exec` (`node --check`, headless test runners, exit code 0) before approving code.
 
 3. **Pillar 3: High-Performance Code Intelligence (AST Outline & NVIDIA Semantic Rerank)**  
    To eliminate context window overflow in enterprise repositories:
@@ -331,12 +331,14 @@ A classic trap in multi-agent Coder-Critic dynamics is the **Infinite Ping-Pong 
 * **Hard 2-Cycle Milestone Escalation Gate:** The Coordinator enforces a strict maximum of **2 remediation cycles per milestone**. If an architectural or logic defect cannot be resolved within 2 iterations, the swarm automatically halts and escalates directly to **Human-in-the-Loop (HITL)** supervision, preventing runaway API spend.
 * **Transient 8-Streak Circuit Breaker:** When cloud APIs experience network drops (`503/504` or dropped sockets), the system sends automated `"Continue!"` pulses, but strictly caps zero-progress retries at 8 consecutive streaks (any forward progress resets the counter).
 
-#### 2. High-Performance Polyglot AST Intelligence (`code-outline` & `code-graph`)
-Passing full files into LLM context windows to locate functions or audit call sites rapidly exhausts context and incurs severe context degradation.  
-**ŽyrenClaw's Code Intelligence Engine (`scaffolds/tools/`) implements lightweight, zero-overhead Abstract Syntax Tree (AST) analysis**:
-* **Instant Structural Sight (<40ms):** `code-outline` extracts classes, methods, type signatures, docstrings, and exact line ranges across Python, JavaScript, TypeScript, JSX, and TSX without ingesting file bodies—achieving **96.2% token savings**.
-* **Zero Heavy LSP Daemons:** Instead of requiring heavy, brittle Language Server Protocol (LSP) daemons, `code-outline` combines Python's native C-optimized `ast` engine with Tree-sitter / grammar-based symbol tokenization, providing lightning-fast cross-platform structural parsing.
-* **Mandatory Blast Radius Gate:** `code-graph` statically traces cross-file callers and imported interfaces. `zyren-critic` is constitutionally mandated to run `code-graph --impact <file>` on every PR; if any dependent caller was broken or left orphaned, the release is blocked automatically.
+#### 2. Two-Layer Code Intelligence: Heuristic Static Filtering & Deterministic Runtime Gating (`code-outline` & `code-graph`)
+Passing full files into LLM context windows to locate functions or audit call sites rapidly exhausts context and incurs severe context degradation. To solve this pragmatically without the brittle overhead of full Language Server Protocol (LSP) daemons, **ŽyrenClaw implements a Two-Layer Defense-in-Depth verification architecture**:
+* **Layer 1 — Zero-Dependency Static Heuristic Filter (`scaffolds/tools/`):**
+  - **Instant Structural Sight (<40ms):** `code-outline` extracts classes, methods, type signatures, docstrings, and exact line ranges across Python, JavaScript, TypeScript, JSX, and TSX without ingesting file bodies—achieving **96.2% token savings**.
+  - **Pragmatic Dual-Engine Design:** Uses Python's native C-optimized `ast` module for full semantic AST parsing in Python, paired with fast regex and grammar-based lexical tokenization for JavaScript and TypeScript. Following industry-standard patterns established by tools like Aider, this avoids heavy external C-compiler toolchains while delivering rapid structural visibility.
+  - **Static Blast Radius Estimation:** `code-graph` statically traces cross-file callers and imported interfaces to estimate the blast radius (`code-graph --impact <file>`) before changes are committed.
+* **Layer 2 — Mandatory Deterministic Runtime Gate:**
+  - Because static analysis on dynamic, mid-edit code is inherently heuristic, ŽyrenClaw **never relies on static heuristics alone**. `zyren-critic` couples the static filter with deterministic runtime verification via `exec` (`node --check`, syntax assertions, headless simulations, and exit code 0) before granting final approval.
 
 #### 3. Frontier Cross-Model Tiering & Cognitive Diversity
 A critical flaw in naive multi-agent architectures is using the exact same model weights for both the Coder and the Critic—meaning the Critic shares the exact same hallucinations and blind spots as the Coder.  
@@ -382,16 +384,23 @@ The single most decisive factor in achieving 100% runnable software delivery was
 
 ## 6. Empirical Validation & Cross-Generational Benchmarking
 
-### 6.1 The Strategic Rationale: Why an Interactive Game as a Canary Benchmark?
-While an arcade game may initially appear deceptively simple compared to distributed enterprise systems, its selection as the standard calibration benchmark was **deliberate, strategic, and methodologically rigorous**:
+### 6.1 The Strategic Rationale: Why Canary Microcosms for Core Calibration?
+While interactive games and WebGL applications may initially appear distinct from distributed enterprise backends, their selection as the calibration benchmark was **deliberate, strategic, and methodologically rigorous**:
 
-1. **A Full-Stack Vertical Microcosm:** An interactive web game functions as a complete end-to-end software stack condensed into a rapid-execution footprint:
-   - **Frontend & Visual Systems:** Dynamic HTML5 canvas rendering, modern Glassmorphism CSS, responsive viewport scaling, and multi-screen modal management (`Start`, `Pause`, `Game Over`, `Level Complete`).
-   - **Client-Side Engine & Algorithmic Logic:** 60 FPS delta-time (`dt`) physics simulation, collision geometry, mathematical procedural spawn cadence, and combo scaling algorithms.
-   - **Hardware & Web API Integration:** High-frequency mouse tracking, event listeners, and gesture-initialized Web Audio API synthesis.
-   - **State Persistence:** Transactional `localStorage` serialization, high-score recovery, and settings state.
-2. **Extreme Sensitivity to Coordination & Link-Class Bugs:** In a real-time game loop, there is zero tolerance for interface mismatches. If an agent misnames a single DOM ID, clamps a delta-time float incorrectly (e.g., causing 10x slow-motion simulation), or omits an export across module boundaries, the game crashes instantly with a white screen. It served as an ultra-sensitive **Canary Benchmark** that immediately exposed the fatal flaws of horizontal multi-agent splitting (such as missing module exports and desynchronized DOM IDs).
-3. **Rapid Iteration & Cost-Effective Cycle Time:** Evaluating multi-agent swarms against monolithic enterprise codebases incurs substantial latency (30–60 minutes per run) and burns tens of thousands of tokens per pass. The Fruit Catcher benchmark provided sub-second build and execution verification, allowing the author to iteratively isolate, diagnose, and refine swarm topologies without prohibitive token churn.
+1. **Canary Benchmarks as Full-Stack Vertical Microcosms:**  
+   In systems engineering, a **Canary Benchmark** is an ultra-dense, self-contained workload designed to test all system layers simultaneously without the noise of external network services:
+   - **Complete Vertical Integration:** An interactive web application condenses frontend rendering, CSS responsive design, algorithmic math/physics loops, event listeners, and local state persistence into a unified Walking Skeleton.
+   - **Extreme Sensitivity to Link-Class Defects:** In real-time loops, there is zero tolerance for interface mismatches. If an agent misnames a single DOM ID, produces an unhandled runtime exception, or omits an export across module boundaries, the application fails instantly. It served as an ultra-sensitive canary that immediately exposed the fatal flaws of horizontal multi-agent splitting.
+   - **Rapid Calibration Cycle Time:** Evaluating multi-agent swarms against monolithic enterprise codebases incurs substantial latency (30–60 minutes per run) and burns tens of thousands of tokens per pass. The canary benchmarks provided immediate execution feedback, allowing the author to iteratively isolate, diagnose, and refine swarm topologies.
+
+2. **Empirical Breakthrough: Solving the Heavy Simulation Stall (The Multi-Phase Gate):**  
+   As documented in our empirical memory logs (`benchmarks/cat-playground/learning-memory-2026-10-23.md`), early attempts to run exhaustive headless 3D simulation harnesses inside Node.js stalled due to CPU/GPU environment constraints. Rather than ignoring this bottleneck, ŽyrenClaw engineered the **Multi-Phase Verification Gate**:
+   - **Phase 1 (Syntax & Asset Preflight):** Extraction of scripts followed by `node --check` syntax validation and CDN endpoint HEAD probes (exit code 0).
+   - **Phase 2 (Static Contract Assertions):** Automated assertion of DOM selectors, event handlers, and data structures (39/39 asserts).
+   - **Phase 3 (Bounded Runtime Smoke Execution):** Bounded simulation of state transitions and logic loops, avoiding heavy infinite harnesses.
+
+3. **Scope & Roadmap Delineation (Canary Microcosms vs. SWE-bench):**  
+   These canary benchmarks prove that the 5-agent swarm can autonomously deliver cohesive, runnable, multi-system applications from scratch with zero human intervention. As detailed in [Section 7.4](#74-upcoming-milestones-distributed-systems--swe-bench-benchmarking), formal evaluation across existing multi-file enterprise codebases using **SWE-bench Verified** represents the next planned milestone on our architectural roadmap.
 
 ### 6.2 Cross-Generational Architectural & Operational Benchmark Matrix
 
@@ -404,7 +413,7 @@ The following matrix contrasts the empirical performance, architectural topology
 | **Decomposition Strategy** | Horizontal Layer Splitting (PRD → Arch → Coder/UX/DB) | Micro-Kernel Tool Dispatch | **Vertical Feature Slicing** (Cohesive Walking Skeletons) |
 | **Context & Token Overhead** | O(N²) message cascades; >30% semantic degradation across handoffs | Audio stream buffers; bounded single-turn sliding window | **O(N) Hub-and-Spoke**; in-process RRF vector/FTS5 memory (<5MB RAM) with pre-compaction flushing |
 | **Turnaround Latency Profile** | High Latency (multi-stage sequential deliberation, DAG fan-out synchronization, review bottlenecks) | Low Latency (real-time voice streaming with decoupled execution) | **Rapid Turnaround** (single-pass cohesive slice with immediate in-process verification) |
-| **First-Run Code Execution** | Highly Prone to Failure (frequent link-class bugs, broken module imports, desynchronized DOM IDs) | N/A (Infrastructure chassis & voice prototype) | **Consistently Runnable** (guaranteed working Walking Skeleton verified at runtime by Critic) |
+| **First-Run Code Execution** | Highly Prone to Failure (frequent link-class bugs, broken module imports, desynchronized DOM IDs) | N/A (Infrastructure chassis & voice prototype) | **Consistently Runnable** (verified runnable Walking Skeleton validated at runtime by Critic) |
 | **Local Infrastructure Footprint** | 1.5GB – 2.5GB RAM (Docker Compose: Postgres, Qdrant, LiteLLM, Jaeger) | <50MB RAM (SQLite WAL, token bucket limiters, AI Workbench) | **<150MB RAM total** (Native Node.js Gateway + embedded `sqlite-vec` sidecar; <5MB for memory store) |
 | **Out-of-Pocket Inference Spend (Prototyping Phase)** | **\$0.00** (Free developer tiers & local Ollama fallbacks) | **\$0.00** (NVIDIA NIM developer credits & Gemini Live preview) | **\$0.00** (Executed within non-commercial **NVIDIA Developer Program** prototyping allocations [`integrate.api.nvidia.com`]) |
 | **Failure Recovery Mode** | Full DAG checkpoint rollback; 3-strike escalation to Break-Glass HITL | CircuitBreaker & FallbackProviderChain with backoff | **Same-Session in-memory surgical remediation** via `sessions_send` + 8-streak zero-progress watchdog |
@@ -461,7 +470,7 @@ The true test of **ŽyrenClaw** occurred during live human playtesting, where na
 ### 7.1 Track 1 Milestone: The Deterministic Code Intelligence Engine (Completed Implementation)
 Following the empirical validation of the Vertical Slicing topology, the collective expanded its code-level exploration and context-compression capabilities through **Track 1 (Code Intelligence & Cross-File Structural Context)**:
 - **AST Outline Engine (`code-outline`):** A zero-dependency AST parser reducing prompt context consumption by **96.2%** (~300 tokens vs. ~8,000 tokens on 700+ line files) while delivering instant structural sight across Python, JavaScript, and TypeScript in under 40ms (`scaffolds/tools/code_outline.py`).
-- **Cross-File Call-Graph & Blast Radius Gate (`code-graph`):** A multi-pass static symbol and reference tracker with an **enforced deterministic verification gate on `zyren-critic`**, making it mathematically impossible to merge code that breaks downstream call sites or interfaces (`scaffolds/tools/code_graph.py`).
+- **Cross-File Call-Graph & Blast Radius Gate (`code-graph`):** A multi-pass static symbol and reference tracker providing a **fast heuristic blast radius gate on `zyren-critic`** (`scaffolds/tools/code_graph.py`) to statically trace dependencies and catch broken callers prior to Layer 2 runtime execution.
 - **Two-Stage Semantic Retrieval & Cross-Encoder Reranker (`code-search`):** A universal CLI discovery tool powered by **NVIDIA Nemotron-3.5-Embed-8B** (4096 dimensions) and **NVIDIA Nemotron-3.5-Rerank-8B**, backed by local SQLite SHA-256 caching for sub-second natural language queries in both English and Arabic (`scaffolds/tools/code_search.py`).
 - **Native Gateway Compaction:** Fully integrated with OpenClaw's core gateway auto-compaction and pre-compaction memory flush (`memoryFlush: enabled`), preserving recent operational turns without transcript data loss.
 - **Current Operational Status:** Tool construction, unit benchmarking, and global CLI integration are **100% completed**. Comprehensive end-to-end stress testing within live distributed project generation is queued for the immediate next milestone.
