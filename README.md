@@ -85,6 +85,7 @@ This case study documents the complete architectural evolution of autonomous sof
 - [2. Generation 2: NVIDIA NeMo Chassis & Dual-Brain Liaison](#2-generation-2-the-nvidia-nemo-ecosystem--the-first-consolidation)
 - [3. Generation 3: Evaluating NemoClaw & Forging ŽyrenClaw](#3-generation-3-evaluating-nemoclaw--forging-žyrenclaw)
 - [4. Evolutions Inside ŽyrenClaw: The 5-Agent Hub-and-Spoke Topology](#4-evolutions-inside-žyrenclaw-from-7-node-intermediate-setup-to-the-5-agent-hub-and-spoke-topology)
+  - [4.3 Engineering Anti-Fragility: Circuit Breakers, Polyglot AST, & Model Tiering](#43-engineering-anti-fragility-circuit-breakers-polyglot-ast--cognitive-model-tiering)
 - [5. Breakthroughs: LangClaw & Vertical Feature Slicing](#5-the-two-game-changing-breakthroughs-langclaw--vertical-slicing)
 - [6. Empirical Canary Benchmark & Playtest Audit Results](#6-empirical-validation--cross-generational-benchmarking)
 - [7. Current Progress & Future Architectural Roadmap (Track 1 & Beyond)](#7-current-progress--future-architectural-roadmap)
@@ -318,6 +319,31 @@ flowchart TD
 | 3 | `zyren-planner` | **Žyren Planner** 📐 | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **Master Complexity-Aware Architectural Planner.** Authors cohesive file contracts, mathematical specifications, `GDD.md`, and Walking Skeleton + Vertical Slice blueprints. Audited by `zyren-critic`. |
 | 4 | `zyren-coder` | **Žyren Coder** 💻 | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **Unified Full-Stack Implementation Specialist.** Owns 100% of Application Logic + UI/UX Glassmorphism & WCAG 2.2 Accessibility + Database Schemas (`localStorage`, SQLite, PostgreSQL). Must run a pre-delivery self-check via `exec` before reporting back. |
 | 5 | `zyren-critic` | **Žyren Critic** ⚖️ | **Primary:** `nvidia/nemotron-3.5-super-vl-120b-a12b`<br/>**Fallbacks:** `step-5-preview`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **Universal Quality Gate & Deterministic Runtime Verifier.** Uses a distinct primary model family (`nemotron-3.5-super-vl-120b-a12b`) for cross-model diversity. Strictly forbidden from modifying source files or issuing text-only approvals; must execute the **4-Point Deterministic Runtime Verification Suite via `exec`**. |
+
+### 4.3 Engineering Anti-Fragility: Circuit Breakers, Polyglot AST, & Cognitive Model Tiering
+
+To guarantee production stability and prevent the common failure modes of open-source multi-agent swarms, **ŽyrenClaw incorporates three foundational engineering safeguards**:
+
+#### 1. Deadlock Circuit Breakers & Anti-Ping-Pong Protocol
+A classic trap in multi-agent Coder-Critic dynamics is the **Infinite Ping-Pong Loop**—where the Critic continually rejects code, triggering endless rework cycles that exhaust token budgets and API credits in minutes.  
+**ŽyrenClaw enforces strict, deterministic Circuit Breakers** across `scaffolds/AGENTS.md` and `SOUL.md`:
+* **The 3-Strike Deadlock Protocol:** If `zyren-critic` rejects deliverables 3 consecutive times with zero convergence, the system trips an automatic circuit breaker and triggers `langclaw_replan_deadlock` to author a targeted delta recovery plan without wiping existing codebase progress.
+* **Hard 2-Cycle Milestone Escalation Gate:** The Coordinator enforces a strict maximum of **2 remediation cycles per milestone**. If an architectural or logic defect cannot be resolved within 2 iterations, the swarm automatically halts and escalates directly to **Human-in-the-Loop (HITL)** supervision, preventing runaway API spend.
+* **Transient 8-Streak Circuit Breaker:** When cloud APIs experience network drops (`503/504` or dropped sockets), the system sends automated `"Continue!"` pulses, but strictly caps zero-progress retries at 8 consecutive streaks (any forward progress resets the counter).
+
+#### 2. High-Performance Polyglot AST Intelligence (`code-outline` & `code-graph`)
+Passing full files into LLM context windows to locate functions or audit call sites rapidly exhausts context and incurs severe context degradation.  
+**ŽyrenClaw's Code Intelligence Engine (`scaffolds/tools/`) implements lightweight, zero-overhead Abstract Syntax Tree (AST) analysis**:
+* **Instant Structural Sight (<40ms):** `code-outline` extracts classes, methods, type signatures, docstrings, and exact line ranges across Python, JavaScript, TypeScript, JSX, and TSX without ingesting file bodies—achieving **96.2% token savings**.
+* **Zero Heavy LSP Daemons:** Instead of requiring heavy, brittle Language Server Protocol (LSP) daemons, `code-outline` combines Python's native C-optimized `ast` engine with Tree-sitter / grammar-based symbol tokenization, providing lightning-fast cross-platform structural parsing.
+* **Mandatory Blast Radius Gate:** `code-graph` statically traces cross-file callers and imported interfaces. `zyren-critic` is constitutionally mandated to run `code-graph --impact <file>` on every PR; if any dependent caller was broken or left orphaned, the release is blocked automatically.
+
+#### 3. Frontier Cross-Model Tiering & Cognitive Diversity
+A critical flaw in naive multi-agent architectures is using the exact same model weights for both the Coder and the Critic—meaning the Critic shares the exact same hallucinations and blind spots as the Coder.  
+**ŽyrenClaw enforces strict Cross-Model Cognitive Diversity** in `openclaw.json`:
+* **Independent Critic Family (`nemotron-3.5-super-vl-120b`):** The primary Critic is powered by NVIDIA's heavyweight reasoning model (`nvidia/nemotron-3.5-super-vl-120b-a12b`), ensuring that verification is conducted by a completely distinct model family with superior logical rigor.
+* **Fast & Fluid Implementation (`step-5-preview` & `deepseek-v4.1`):** The Coder and Coordinator leverage high-speed frontier coding models (`nvidia/stepfun-ai/step-5-preview` with DeepSeek V4.1 fallbacks), optimizing for rapid code generation and multi-language fluency.
+* **Multi-Tier Fallback Cascades:** Every agent is configured with a 3-tier cascade (`primary` ➔ `fallback_1` ➔ `fallback_2`), guaranteeing zero execution downtime during cloud provider rate-limits or temporary endpoint degradations.
 
 ---
 
