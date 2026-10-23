@@ -88,6 +88,7 @@ This case study documents the complete architectural evolution of autonomous sof
   - [4.3 Engineering Anti-Fragility: Circuit Breakers, Polyglot AST, & Model Tiering](#43-engineering-anti-fragility-circuit-breakers-polyglot-ast--cognitive-model-tiering)
 - [5. Breakthroughs: LangClaw & Vertical Feature Slicing](#5-the-two-game-changing-breakthroughs-langclaw--vertical-slicing)
 - [6. Empirical Canary Benchmark & Playtest Audit Results](#6-empirical-validation--cross-generational-benchmarking)
+  - [6.5 Active Live Stress Test: The Overnight Multi-Hour 3D Marathon](#65-active-live-stress-test-the-unattended-overnight-multi-hour-3d-marathon-grand-project)
 - [7. Current Progress & Future Architectural Roadmap (Track 1 & Beyond)](#7-current-progress--future-architectural-roadmap)
 - [8. Academic Citation & Reference](#8-citation--attribution)
 
@@ -483,6 +484,21 @@ The true test of **ŽyrenClaw** occurred during live human playtesting, where na
      - The coordinator routed the audit defects back to `zyren-coder`. Within 4 minutes, all 4 issues were remediated without operator involvement.
    - **Verified Human Playtest Outcome:**
      - The operator launched `index.html` locally over `file://`, completed full live playtesting across escalating waves, and recorded a verified high score of **10,515 points** (`menu-best` / `localStorage`).
+
+### 6.5 Active Live Stress Test: The Unattended Overnight Multi-Hour 3D Marathon (`grand-project`)
+To stress-test the upper architectural limits of long-horizon autonomous software engineering and evaluate swarm durability under sustained, unguided multi-hour execution, **ŽyrenClaw** has been placed under an active **Overnight Autonomous Marathon Challenge**:
+- **Execution Parameters & Infrastructure Hardening:**
+  - **Elevated Session Ceiling:** The primary coordinator session timeout was expanded from standard 1-hour prototyping defaults (`timeoutSeconds: 3600`) to **10 full hours (`timeoutSeconds: 36000`)** in `~/.openclaw/openclaw.json` to eliminate artificial framework truncation.
+  - **Resource Optimization:** Host memory freed to **5.52 GB physical RAM**, providing comfortable overhead for Node child processes, headless DOM simulations, and continuous file operations.
+  - **State-Anchored Compaction Protocol:** Incorporates explicit disk-based journaling (`PROGRESS.md`) to systematically counteract semantic amnesia and "Compaction Cliff" degradation across dozens of automated context flush cycles.
+- **The Workload (Mega-Scale 3D WebGL Ecosystem):**
+  - **10–12 Playable Procedural Sectors:** Progressive procedural geometry palettes, escalating enemy archetype behaviors, and distinct multi-phase boss encounters.
+  - **Decoupled Modular Architecture:** Spanning `core/engine.js`, `core/physics.js`, `core/audio.js`, `entities/`, `systems/progression.js`, `systems/save-state.js`, and `ui/hud.js`.
+  - **Zero-Trust Quality Gate Integration:** Continuous runtime assertions by `zyren-critic` validating state transitions, WebAudio synthesizers, and DOM contracts end-to-end.
+- **Core Research Questions Being Evaluated:**
+  1. *Long-Horizon Attention Retention:* Does the hybrid memory stack (state-anchored progress logs + OpenClaw 768D vector recall + soft-threshold auto-compaction) successfully prevent context degradation across multi-hour continuous execution?
+  2. *Autonomous Deadlock Avoidance:* Can the swarm's built-in circuit breakers (3-strike replan, 2-cycle remediation ceiling) prevent infinite retry loops during complex, multi-file modular refactoring without human intervention?
+  3. *Unattended Zero-Instruction Delivery:* Will the collective deliver a 100% playable, error-free 3D production game upon operator morning review?
 
 ---
 
