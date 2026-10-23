@@ -1,0 +1,609 @@
+/* Fruit Catcher — Modern Glassmorphism Styles (2026 aesthetic) */
+
+:root {
+    --bg-start: #0f172a;
+    --bg-end: #1e1b4b;
+    --glass: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    --text: #f8fafc;
+    --text-muted: #cbd5e1;
+    --accent: #22d3ee;
+    --accent-glow: #818cf8;
+    --danger: #f87171;
+    --success: #34d399;
+    --warn: #fbbf24;
+    --radius: 16px;
+    --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    --font: "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 40%, #f59e0b 76%, #78350f 100%);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    touch-action: none;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* App shell / viewport */
+.app-shell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Canvas */
+#gameCanvas {
+    display: block;
+    position: relative;
+    z-index: 2;
+    max-width: 88vw;
+    max-height: 64vh;
+    /* Transparent canvas = clear window onto the cozy farm scene behind it */
+    background: transparent;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), inset 0 0 28px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: none;
+}
+
+/* HUD */
+.hud {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 28px;
+    z-index: 40;
+    pointer-events: none;
+    opacity: 0.95;
+    transition: var(--transition);
+}
+
+.hud-item {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 6px 14px;
+    box-shadow: var(--glass-shadow);
+}
+
+.hud-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.hud-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+
+.hud-lives .hud-value {
+    color: var(--danger);
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.45);
+}
+
+/* Screens overlay */
+.screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 50;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: var(--transition);
+    pointer-events: auto;
+}
+
+.screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.glass-card {
+    width: min(92vw, 430px);
+    padding: 40px 32px;
+    border-radius: var(--radius);
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    text-align: center;
+    animation: cardIn 0.55s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Typography */
+.game-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 40%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 14px rgba(129, 140, 248, 0.35));
+}
+
+.title-accent {
+    color: var(--accent);
+}
+
+.screen-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: var(--text);
+}
+
+.game-over-title {
+    color: var(--danger);
+    text-shadow: 0 0 16px rgba(248, 113, 113, 0.35);
+}
+
+.screen-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0 0 24px;
+    line-height: 1.5;
+}
+
+.controls-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 26px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+.controls-hint .hint-icon {
+    font-size: 1.2rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 150px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0b0f19;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.5), 0 10px 24px rgba(34, 211, 238, 0.35);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.7), 0 14px 28px rgba(34, 211, 238, 0.55);
+    filter: brightness(1.1);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Stats row */
+.screen-stats {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin: 18px 0 26px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 16px;
+    min-width: 90px;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+/* Audio hint */
+.audio-hint {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    z-index: 60;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.audio-hint:hover {
+    background: rgba(30, 41, 59, 0.85);
+    color: var(--text);
+}
+
+.audio-hint.hidden {
+    display: none;
+}
+
+/* Responsive canvas sizing */
+@media (max-width: 640px) {
+    #gameCanvas {
+        max-height: 50vh;
+    }
+    .hud {
+        top: 10px;
+        gap: 16px;
+    }
+    .hud-item {
+        padding: 5px 10px;
+    }
+    .hud-value {
+        font-size: 1.05rem;
+    }
+    .glass-card {
+        padding: 32px 24px;
+    }
+    .game-title {
+        font-size: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* --- Ambient background (floating depth elements behind the canvas) --- */
+.ambient {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    /* Cozy countryside dusk sky: deep blue to warm apricot horizon and rich earth */
+    background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 38%, #f59e0b 74%, #78350f 100%);
+}
+
+.ambient-floater {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(16px);
+    opacity: 0.35;
+    animation: floatAmbient ease-in-out infinite;
+}
+
+@keyframes floatAmbient {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(16px, -24px); }
+    50% { transform: translate(-12px, 18px); }
+    75% { transform: translate(20px, 10px); }
+}
+
+/* --- Cozy countryside farm scene (CSS only, sits behind the canvas) --- */
+.farm-layer {
+    position: absolute;
+    pointer-events: none;
+}
+
+/* Rolling green fields below the horizon */
+.farm-fields {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 44%;
+    background:
+        radial-gradient(ellipse 160% 90% at 50% 15%, #6ee7b7 0%, #22c55e 45%, #14532d 100%),
+        radial-gradient(ellipse 140% 65% at 20% 35%, #86efac 0%, #4ade80 55%, transparent 70%),
+        radial-gradient(ellipse 130% 70% at 85% 30%, #a7f3d0 0%, #4ade80 60%, transparent 70%);
+}
+
+/* Sun */
+.farm-sun {
+    top: 7%;
+    right: 12%;
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 42%, #ffffff, #fde047 55%, #d97706 100%);
+    box-shadow: 0 0 85px rgba(253, 224, 71, 0.9), 0 0 24px rgba(217, 119, 6, 0.65);
+}
+
+/* Distant rolling hills */
+.farm-hill {
+    position: absolute;
+    bottom: -6%;
+    width: 170vw;
+    height: 24vh;
+    border-radius: 50%;
+    filter: blur(10px);
+}
+.farm-hill.far {
+    left: -40vw;
+    background: #4d7c0f;
+    opacity: 0.8;
+}
+.farm-hill.near {
+    left: -8vw;
+    background: #15803d;
+    opacity: 0.9;
+    z-index: 1;
+}
+
+/* Cottage */
+.farm-cottage {
+    position: absolute;
+    bottom: 5%;
+    left: 28%;
+    width: 180px;
+    height: 124px;
+    z-index: 2;
+}
+.cottage-body {
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    right: 8px;
+    height: 74px;
+    background: linear-gradient(180deg, #f59e0b, #b45309);
+    border: 4px solid #78350f;
+    border-radius: 6px 6px 0 0;
+    box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.15);
+}
+.cottage-roof {
+    position: absolute;
+    top: -42px;
+    left: -20px;
+    width: 220px;
+    height: 50px;
+    background: #3f1702;
+    clip-path: polygon(0 100%, 100% 100%, 50% 0);
+    border: 4px solid #2e1205;
+    border-bottom: none;
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+}
+.cottage-window {
+    position: absolute;
+    top: 24px;
+    left: 50px;
+    width: 30px;
+    height: 30px;
+    background: #fde047;
+    border: 3px solid #78350f;
+    border-radius: 6px;
+    box-shadow: 0 0 18px rgba(253, 224, 71, 0.95);
+    z-index: 3;
+}
+.cottage-window::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+.cottage-door {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 34px;
+    background: #78350f;
+    border-radius: 4px 4px 0 0;
+    z-index: 3;
+}
+.cottage-chimney {
+    position: absolute;
+    top: -14px;
+    left: 106px;
+    width: 14px;
+    height: 20px;
+    background: #78350f;
+    z-index: 1;
+}
+.cottage-smoke {
+    position: absolute;
+    top: -30px;
+    left: 108px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    filter: blur(4px);
+    animation: puff 6s ease-in-out infinite;
+}
+@keyframes puff {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0.7; }
+    100% { transform: translate(-14px, -22px) scale(1.3); opacity: 0; }
+}
+
+/* Trees */
+.farm-tree {
+    position: absolute;
+    bottom: 2%;
+    border-radius: 50%;
+    filter: blur(2px);
+}
+.farm-tree.near {
+    left: 2%;
+    width: 120px;
+    height: 96px;
+    background: radial-gradient(circle at 50% 42%, #86efac, #15803d);
+    z-index: 1;
+    filter: blur(1px);
+}
+.farm-tree.far {
+    right: 3%;
+    width: 150px;
+    height: 120px;
+    opacity: 0.85;
+    filter: blur(3px);
+    background: radial-gradient(circle at 50% 42%, #4ade80, #15803d);
+}
+.farm-trunk {
+    position: absolute;
+    bottom: 2%;
+    left: 6%;
+    width: 18px;
+    height: 46px;
+    background: #78350f;
+    border-radius: 2px;
+    z-index: 0;
+}
+
+/* --- HUD group + pause button --- */
+.hud-group {
+    gap: 24px;
+}
+
+.btn-pause {
+    min-width: auto;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+    line-height: 1;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.10));
+    color: var(--text);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.btn-pause:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.16));
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+.btn-pause:active {
+    transform: translateY(0);
+}
+
+.btn-pause:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.btn-pause[aria-pressed="true"] {
+    background: var(--warn);
+    color: #0b0f19;
+    border-color: rgba(251, 191, 36, 0.45);
+}
+
+/* --- NEW BEST! badge --- */
+.new-best {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: var(--warn);
+    color: #0b0f19;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 0 0 24px rgba(251, 191, 36, 0.55);
+    animation: ping 1.2s ease-in-out infinite;
+}
+
+@keyframes ping {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.9; }
+}
+
+/* --- Pause screen --- */
+.screen.pause .glass-card {
+    max-width: min(92vw, 400px);
+}

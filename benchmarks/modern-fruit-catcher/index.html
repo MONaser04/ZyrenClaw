@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fruit Catcher — Glassmorphism Arcade</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-shell">
+        <!-- Ambient background (floating depth elements behind the canvas) -->
+        <div class="ambient" id="ambient">
+            <!-- Cozy countryside farm scene (CSS only) -->
+            <div class="farm-layer farm-fields"></div>
+            <div class="farm-layer farm-sun"></div>
+            <div class="farm-layer farm-hill far"></div>
+            <div class="farm-layer farm-hill near"></div>
+            <div class="farm-layer farm-cottage">
+                <div class="cottage-roof"></div>
+                <div class="cottage-body"></div>
+                <div class="cottage-chimney"></div>
+                <div class="cottage-window"></div>
+                <div class="cottage-door"></div>
+                <div class="cottage-smoke"></div>
+            </div>
+            <div class="farm-layer farm-tree near"></div>
+            <div class="farm-layer farm-tree far"></div>
+            <div class="farm-layer farm-trunk"></div>
+        </div>
+
+        <!-- Game canvas -->
+        <canvas id="gameCanvas" tabindex="0" aria-label="Fruit Catcher game canvas" role="region" aria-roledescription="game"></canvas>
+
+        <!-- HUD -->
+        <div class="hud hud-group" aria-live="polite" aria-label="Game status">
+            <div class="hud-item">
+                <span class="hud-label">Score</span>
+                <span id="scoreDisplay" class="hud-value">0</span>
+            </div>
+            <div class="hud-item hud-lives">
+                <span class="hud-label">Lives</span>
+                <span id="livesDisplay" class="hud-value">3</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Level</span>
+                <span id="levelDisplay" class="hud-value">1</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Best</span>
+                <span id="bestDisplay" class="hud-value">0</span>
+            </div>
+            <button id="pauseBtn" class="btn btn-pause" aria-label="Pause game" aria-pressed="false">&#x23F8;</button>
+        </div>
+
+        <!-- Start screen -->
+        <div id="startScreen" class="screen start active">
+            <div class="glass-card">
+                <div class="game-title">Fruit<span class="title-accent">Catcher</span></div>
+                <p class="screen-subtitle">Catch falling fruits. Avoid bombs and rotten fruit.</p>
+                <div class="controls-hint">
+                    <span class="hint-icon">🖱️</span><span>Move mouse to move the basket</span>
+                </div>
+                <button id="startBtn" class="btn btn-primary">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Level complete screen -->
+        <div id="levelCompleteScreen" class="screen level-complete hidden">
+            <div class="glass-card">
+                <div class="screen-title">Level Complete!</div>
+                <p id="levelMsg" class="screen-subtitle">Nice catch!</p>
+                <div class="screen-stats">
+                    <span class="stat"><span class="stat-label">Score</span><span id="lcScore" class="stat-value">0</span></span>
+                    <span class="stat"><span class="stat-label">Lives</span><span id="lcLives" class="stat-value">3</span></span>
+                </div>
+                <button id="nextLevelBtn" class="btn btn-primary">Next Level</button>
+            </div>
+        </div>
+
+        <!-- Pause screen -->
+        <div id="pauseScreen" class="screen pause hidden">
+            <div class="glass-card">
+                <div class="screen-title">Paused</div>
+                <p class="screen-subtitle">Press P or click Resume to continue</p>
+                <button id="resumeBtn" class="btn btn-primary">Resume</button>
+            </div>
+        </div>
+
+        <!-- Game over screen -->
+        <div id="gameOverScreen" class="screen game-over hidden">
+            <div class="glass-card">
+                <div class="screen-title game-over-title">Game Over</div>
+                <p class="screen-subtitle">You missed too many fruits.</p>
+                <div class="screen-stats">
+                    <span class="stat"><span class="stat-label">Final Score</span><span id="finalScore" class="stat-value">0</span></span>
+                    <span class="stat"><span class="stat-label">Level Reached</span><span id="finalLevel" class="stat-value">1</span></span>
+                    <span class="stat"><span class="stat-label">Final Best</span><span id="finalBest" class="stat-value">0</span></span>
+                </div>
+                <div id="newBestBadge" class="new-best" aria-hidden="true">NEW BEST!</div>
+                <button id="restartBtn" class="btn btn-primary">Play Again</button>
+            </div>
+        </div>
+
+        <!-- Audio hint (shown until first interaction) -->
+        <div id="audioHint" class="audio-hint hidden">
+            🔊 Click to enable sound
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
