@@ -261,25 +261,36 @@ The production **ŽyrenClaw** collective (`v4.0 Spec` in `workspace/zyren-dev-te
 flowchart TD
     User(["👤 Human Operator"]) <--> Hub
 
-    subgraph Hub_Node["1. Central Coordinator & Dynamic Orchestrator"]
-        Hub["⚡ Žyren Dev Team (zyren-dev-team)<br/>• Phase 1: Conversational & Brainstorming Mode<br/>• Phase 2: Executive Orchestrator (sessions_spawn / sessions_send)<br/>• Primary Model: nvidia/stepfun-ai/step-5-preview<br/>• Fallbacks: nemotron-3.5-super-vl-120b, deepseek-v4.1-flash"]
+    subgraph Hub_Node["1. Central Coordinator & Dynamic Routing Hub"]
+        Hub["⚡ Žyren Dev Team (zyren-dev-team)<br/>• Phase 1: Zero-Dispatch Conversational & Brainstorming Mode<br/>• Phase 2: Dynamic Complexity-Aware Executive Router<br/>• Primary Model: nvidia/stepfun-ai/step-5-preview<br/>• Fallbacks: nemotron-3.5-super-vl-120b, deepseek-v4.1-flash"]
     end
 
-    Hub -->|"1. Multi-Hop Docs & Vetting (Critic-Exempt)"| Res["🔬 Žyren Deep Research<br/>(zyren-research)"]
-    Hub -->|"2. Architecture & Task DAG (Walking Skeleton + Slices)"| Plan["📐 Žyren Planner<br/>(zyren-planner)"]
-    Hub -->|"3. Unified Full-Stack (Logic + Glassmorphism UI + DB)"| Coder["💻 Žyren Coder<br/>(zyren-coder)"]
-    Hub -->|"4. Deterministic Runtime Gate (Exec Tests & Spec Audit)"| Critic["⚖️ Žyren Critic<br/>(zyren-critic)<br/>Primary: nemotron-3.5-super-vl-120b"]
+    %% Dynamic Tier-Aware Dispatch: Dotted for Conditional, Thick for Primary Fast-Path
+    Hub -.->|"Conditional: On-Demand Deep Docs & Vetting"| Res["🔬 Žyren Deep Research<br/>(zyren-research)"]
+    Hub -.->|"Conditional: Tier 2 Large Repos / Multi-Module DAG"| Plan["📐 Žyren Planner<br/>(zyren-planner)"]
+    Hub ==>|"Tier 1 Fast-Path: Direct Walking Skeleton Slice"| Coder["💻 Žyren Coder<br/>(zyren-coder)"]
+    Hub ==>|"Mandatory Quality Gate: Deterministic Runtime Smoke"| Critic["⚖️ Žyren Critic<br/>(zyren-critic)<br/>Primary: nemotron-3.5-super-vl-120b"]
 
-    Res -->|Research Synthesis| Hub
-    Plan -->|Blueprint Deliverable| Hub
+    Res -.->|Synthesized Knowledge| Hub
+    Plan -.->|Architectural Contracts| Hub
     Coder -->|Self-Checked Deliverable| Hub
     Critic -->|PASS: Approved / BLOCK: Revise| Hub
 ```
 
+> [!IMPORTANT]
+> **Dynamic Complexity-Aware Tier Routing vs. The Static Waterfall Fallacy (Why Latency is ~45–60s, Not Minutes):**  
+> A common misconception when analyzing a 5-agent collective is assuming a rigid, sequential 8-hop waterfall on every feature:  
+> `User ➔ Hub ➔ Research ➔ Hub ➔ Planner ➔ Hub ➔ Coder ➔ Hub ➔ Critic ➔ Hub ➔ User` (which would introduce 8 sequential network round-trips and 2–4 minutes of latency).  
+> **ŽyrenClaw explicitly eliminates this waterfall trap.** As formalized in `scaffolds/AGENTS.md` and grounded in latency-aware multi-agent systems research (*LAMaS*, arXiv:2601.10560; *Benchmarking Multi-Agent Architectures*, arXiv:2603.22651), the Hub executes **Dynamic Complexity-Aware Tier Routing**:
+> * **Phase 1: Conversational & Ideation Mode (0 Subagent Hops):** For user queries, clarifications, design discussions, and task definitions, the Hub responds directly in real-time with zero subagents spawned and zero background latency.
+> * **Tier 1 Fast-Path (Small/Medium Features, Web Apps, Games, CLI Tools < 1,500 LOC):** `zyren-research` and `zyren-planner` are **100% bypassed**. The Hub directly dispatches `zyren-coder` to build a unified Walking Skeleton in a single pass, followed immediately by `zyren-critic`'s deterministic runtime smoke test. **Total execution path: exactly 2 subagent hops (~45–60 seconds total turnaround)**.
+> * **Tier 2 Enterprise Pipeline (Large Repositories > 1M Tokens or Multi-Module Distributed Backends):** Only when architectural boundaries, database migrations, or cross-service contracts must be formally partitioned does the Hub conditionally invoke `zyren-planner` to establish a dependency DAG before dispatching isolated Vertical Feature Slices.
+> * **On-Demand Technical Research:** `zyren-research` is an on-demand auxiliary tool spawned exclusively when obscure libraries, external API deprecations, or multi-source documentation vetting are explicitly needed—it is never in the critical latency path of routine feature delivery.
+
 #### Verified Configuration of the 5 Agents in `openclaw.json`
 | # | Agent ID | Display Name & Emoji | Primary & Fallback Models (`openclaw.json`) | Exact Operational Mandate (`AGENTS.md` / `SOUL.md`) |
 |:---:|---|---|---|---|
-| 1 | `zyren-dev-team` | **Žyren Dev Team** ⚡ | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **General Coordinator & Dynamic Orchestrator.** Operates in two strict modes: *Phase 1 (Conversational & Brainstorming)* and *Phase 2 (Executive Orchestrator)*. Strictly forbidden from writing code or running `exec` diagnostics itself; dispatches subagents via `sessions_spawn` (`runTimeoutSeconds: 0`) and routes same-session fixes via `sessions_send`. |
+| 1 | `zyren-dev-team` | **Žyren Dev Team** ⚡ | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **General Coordinator & Dynamic Orchestrator.** Operates in two strict modes: *Phase 1 (Conversational & Brainstorming)* and *Phase 2 (Executive Orchestrator)*. Strictly forbidden from writing code or running `exec` diagnostics itself; dispatches subagents via `sessions_spawn` (`runTimeoutSeconds: 0`) and routes same-session fixes via `sessions_send`. Implements **Dynamic Tier Routing** (bypasses Planner & Research on Tier 1 tasks < 1,500 LOC, delivering in a direct 2-hop fast path in ~45–60s). |
 | 2 | `zyren-research` | **Žyren Deep Research** 🔬 | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **Multi-Hop Technical Investigator.** Synthesizes official documentation, benchmarks, and architectural comparisons. Exempt from Critic gates. |
 | 3 | `zyren-planner` | **Žyren Planner** 📐 | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **Master Complexity-Aware Architectural Planner.** Authors cohesive file contracts, mathematical specifications, `GDD.md`, and Walking Skeleton + Vertical Slice blueprints. Audited by `zyren-critic`. |
 | 4 | `zyren-coder` | **Žyren Coder** 💻 | **Primary:** `nvidia/stepfun-ai/step-5-preview`<br/>**Fallbacks:** `nemotron-3.5-super-vl-120b-a12b`, `deepseek-v4.1-flash`, `nemotron-3.5-lightning-30b-a3b` | **Unified Full-Stack Implementation Specialist.** Owns 100% of Application Logic + UI/UX Glassmorphism & WCAG 2.2 Accessibility + Database Schemas (`localStorage`, SQLite, PostgreSQL). Must run a pre-delivery self-check via `exec` before reporting back. |
