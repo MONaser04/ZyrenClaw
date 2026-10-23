@@ -13,7 +13,7 @@
   1. **Generation 1 (17+3 Agent Star-Topology SDLC Engine):** [MONaser04/Zyren-AI-Dev-Team-I](https://github.com/MONaser04/Zyren-AI-Dev-Team-I)
   2. **Generation 2A (Domain-Agnostic NVIDIA NeMo Execution Chassis):** [MONaser04/Zyren-NeMo-Chassis](https://github.com/MONaser04/Zyren-NeMo-Chassis)
   3. **Generation 2B (Dual-Brain Multimodal Liaison & Switchyard Router):** [MONaser04/Zyren-AI-Dev-Team](https://github.com/MONaser04/Zyren-AI-Dev-Team)
-  4. **Generation 3 (Autonomous Prototyping & Engineering Runtime):** **ŽyrenClaw** (Decoupled OpenClaw Architecture + **LangClaw** `v0.4.0` Sidecar Engine) — *Continuously updated with official upstream releases (including `v2026.10.x+`) without breaking custom UI, gateway, or multi-agent topologies; open-source scaffold: [MONaser04/ZyrenClaw](https://github.com/MONaser04/ZyrenClaw)*
+  4. **Generation 3 & 4 (Production Autonomous Engineering Runtime):** **ŽyrenClaw** (Decoupled OpenClaw Architecture + **LangClaw** `v0.4.0` Sidecar Prototype + 5-Agent Vertical Topology) — *Continuously updated with official upstream releases (including `v2026.10.x+`) without breaking custom UI, gateway, or multi-agent topologies; open-source scaffold: [MONaser04/ZyrenClaw](https://github.com/MONaser04/ZyrenClaw)*
 
 ---
 
@@ -24,7 +24,7 @@ A widespread assumption in agentic system design is that increasing the number o
 This case study documents the complete architectural evolution of autonomous software engineering swarms built under the **Žyren** brand—all engineered solo from the ground up:
 1. **Generation 1 (`Zyren-AI-Dev-Team-I`):** A 19,597-line Python monorepo built from scratch featuring **17 specialized SDLC agent roles** (+ 3 operational agents), a **LangGraph Supervisor Star Topology**, a **6-Domain Semantic Router**, **SmartGateway** with **Bayesian Thompson Sampling** across **10 LLM provider adapters**, and **29 offline test suites**.
 2. **Generation 2 (`Zyren-NeMo-Chassis` & `Zyren-AI-Dev-Team`):** A modular, hardware-constrained (<50MB RAM local state footprint) infrastructure chassis built natively for the **NVIDIA NeMo / NIM ecosystem** and **NVIDIA AI Workbench**, paired with a **Dual-Brain Liaison Agent** combining a **Google Gemini Live API Voice Facade** (`gemini-3.1-flash-live-preview`) with an **NVIDIA Nemotron Reasoning Core** (`nvidia/nemotron-3-ultra-550b-a55b`).
-3. **Generation 3 (`ŽyrenClaw`):** A strategic return to **OpenClaw**, customized at the CLI and UI layers into **ŽyrenClaw** (preserving 100% upstream update compatibility), augmented with the **LangClaw** state/memory sidecar, and distilled into a **5-agent Hub-and-Spoke architecture** governed by **Vertical Feature Slicing (Walking Skeletons)** and a **Mandatory Deterministic Runtime Critic Gate**.
+3. **Generation 3 & 4 (`ŽyrenClaw`):** A strategic return to **OpenClaw**, customized at the CLI and UI layers into **ŽyrenClaw** (preserving 100% upstream update compatibility), augmented with the **LangClaw** state/memory prototype, and distilled into a **Generation 4 production 5-agent Hub-and-Spoke architecture** governed by **Vertical Feature Slicing (Walking Skeletons)** and a **Mandatory Deterministic Runtime Critic Gate**.
 
 ---
 
@@ -82,15 +82,15 @@ This case study documents the complete architectural evolution of autonomous sof
 ---
 
 ### Quick Navigation Index
-- [1. Generation 1: The 20-Agent Monolith (19,597 LOC)](#1-generation-1-building-a-20-agent-sdlc-engine-from-first-principles)
-- [2. Generation 2: NVIDIA NeMo Chassis & Dual-Brain Liaison](#2-generation-2-the-nvidia-nemo-ecosystem--the-first-consolidation)
+- [1. Generation 1: Building a 20-Agent SDLC Engine from First Principles](#1-generation-1-building-a-20-agent-sdlc-engine-from-first-principles)
+- [2. Generation 2: The NVIDIA NeMo Ecosystem & The First Consolidation](#2-generation-2-the-nvidia-nemo-ecosystem--the-first-consolidation)
 - [3. Generation 3: Evaluating NemoClaw & Forging ŽyrenClaw](#3-generation-3-evaluating-nemoclaw--forging-žyrenclaw)
-- [4. Evolutions Inside ŽyrenClaw: The 5-Agent Hub-and-Spoke Topology](#4-evolutions-inside-žyrenclaw-from-7-node-intermediate-setup-to-the-5-agent-hub-and-spoke-topology)
-  - [4.3 Engineering Anti-Fragility: Circuit Breakers, Polyglot AST, & Model Tiering](#43-engineering-anti-fragility-circuit-breakers-polyglot-ast--cognitive-model-tiering)
-- [5. Breakthroughs: LangClaw & Vertical Feature Slicing](#5-the-two-game-changing-breakthroughs-langclaw--vertical-slicing)
-- [6. Empirical Canary Benchmark & Playtest Audit Results](#6-empirical-validation--cross-generational-benchmarking)
-- [7. Current Progress & Future Architectural Roadmap (Track 1 & Beyond)](#7-current-progress--future-architectural-roadmap)
-- [8. Academic Citation & Reference](#8-citation--attribution)
+- [4. Evolutions Inside ŽyrenClaw: From 7-Node Intermediate Setup to the 5-Agent Hub-and-Spoke Topology](#4-evolutions-inside-žyrenclaw-from-7-node-intermediate-setup-to-the-5-agent-hub-and-spoke-topology)
+  - [4.3 Engineering Anti-Fragility: Circuit Breakers, Polyglot AST, & Cognitive Model Tiering](#43-engineering-anti-fragility-circuit-breakers-polyglot-ast--cognitive-model-tiering)
+- [5. The Two Game-Changing Breakthroughs: LangClaw & Vertical Slicing](#5-the-two-game-changing-breakthroughs-langclaw--vertical-slicing)
+- [6. Empirical Validation & Cross-Generational Benchmarking](#6-empirical-validation--cross-generational-benchmarking)
+- [7. Current Progress & Future Architectural Roadmap](#7-current-progress--future-architectural-roadmap)
+- [8. Citation & Attribution](#8-citation--attribution)
 
 ---
 
@@ -359,17 +359,17 @@ Because native OpenClaw isolates agent sessions by default, early multi-step bui
 
 > [!NOTE]
 > **Architectural Consolidation (Gen 3 Prototype ➔ Gen 4 Native Production):**  
-> While LangClaw served as the initial sandbox to prototype vector retrieval (initially evaluating 1536D embeddings), **Generation 4 completely eliminated external sidecar IPC**. In production ŽyrenClaw, the memory substrate was promoted to **OpenClaw Native Memory**, unifying on **NVIDIA Nemotron 768D MRL vectors via `sqlite-vec`** natively inside OpenClaw's core gateway runtime (detailed in Section 7.2).
+> While LangClaw served as the initial sandbox to prototype vector retrieval (Generation 3 prototype evaluated legacy 1536D embeddings), **Generation 4 completely eliminated external sidecar IPC**. In production ŽyrenClaw, the memory substrate was promoted to **OpenClaw Native Memory**, unifying on **NVIDIA Nemotron 768D MRL vectors via `sqlite-vec`** natively inside OpenClaw's core gateway runtime (detailed in Section 7.2).
 
 1. **Real-Time Mesh Milestone Checkpointing (`langclaw_engine`):**
    - Whenever `zyren-dev-team` initiates a project or spawns a branch, it synchronously commits state via `langclaw_engine__langclaw_memory_upsert` (`PROJECT_STATE`, `BRANCH_TASK_<ID>`, `MILESTONE_<FILE>`), and queries active state via `langclaw_engine__langclaw_memory_search`.
    - If a subagent deadlocks 3 consecutive times, `langclaw_engine__langclaw_replan_deadlock` generates a targeted recovery plan without wiping working files.
 2. **In-Process Hybrid Vector + Lexical Memory (`memory_substrate.py` Prototype):**
-   - Evaluated embedded **`sqlite-vec` (`v0.1.9`)** (tested with 1536-dim vectors in Gen 3, subsequently unified natively in Gen 4 at 768D MRL) paired with SQLite **`FTS5`** (`BM25` keyword indexing) fused via **Reciprocal Rank Fusion (RRF, k=60)**—consuming **<5MB RAM** instead of 1.5GB+ external vector databases.
+   - Evaluated embedded **`sqlite-vec` (`v0.1.9`)** (prototype tested with legacy 1536-dim vectors in Gen 3, subsequently standardized natively in Gen 4 at 768D MRL Nemotron-3.5) paired with SQLite **`FTS5`** (`BM25` keyword indexing) fused via **Reciprocal Rank Fusion (RRF, k=60)**—consuming **<5MB RAM** instead of 1.5GB+ external vector databases.
 3. **Context Compaction & Pre-Compaction Memory Flush (`context_compactor.py`):**
    - Uses `tiktoken` BPE token accounting (`soft_threshold_tokens: 3000`, `hard_threshold_tokens: 6000`), prunes stale historical tool outputs while preserving `recentTurnsPreserve: 3`, and flushes durable architectural facts to `MEMORY.md` before sliding-window summarization.
 4. **Hardened Polyglot Execution Sandbox & Watchdog (`execution_bridge.py` & `RUNBOOK.md`):**
-   - Supports isolated Docker execution (`langclaw-sandbox:latest` with `--memory=2048m`, `--cap-drop=ALL`, `--read-only`, `--network=none`, atomic `git apply` patching/rollback) alongside `PostgreSQL 16` (`AsyncPostgresSaver` in `langclaw-postgres`) and V8 memory hardening (`--max-old-space-size=3072`).
+   - Supports isolated Docker execution (`langclaw-sandbox:latest` with `--memory=2048m`, `--cap-drop=ALL`, `--read-only`, `--network=none`, atomic `git apply` patching/rollback) alongside `PostgreSQL 16` (`AsyncPostgresSaver` in `langclaw-postgres`) and V8 heap memory ceiling (`--max-old-space-size=3072 MB`).
 5. **Same-Session Remediation & The "Continue!" Auto-Resume Protocol (`SOUL.md`):**
    - When `zyren-critic` returns `REVISE` / `[BLOCK]`, the Coordinator routes the exact defect report back to `zyren-coder`'s **existing active session** via `sessions_send(sessionKey=..., message=...)`, preserving 100% of its working memory.
    - When cloud endpoints drop connections (`503/504`, `The agent run failed before producing a reply`), the Coordinator automatically sends `"Continue!"` via `sessions_send` with an **8-streak zero-progress circuit breaker** (any forward progress resets the failure counter to 0).
@@ -413,12 +413,12 @@ While interactive games and WebGL applications may initially appear distinct fro
 
 The following matrix contrasts the empirical performance, architectural topology, resource consumption, and reliability metrics across all three generations of the Žyren architecture:
 
-| Operational Dimension | Generation 1: Full SDLC Engine (`Zyren-AI-Dev-Team-I`) | Generation 2: Hardware-Constrained Chassis (`Zyren-NeMo-Chassis` / `Dual-Brain`) | Generation 3: Active Engineering Runtime (**ŽyrenClaw** + LangClaw) |
+| Operational Dimension | Generation 1: Full SDLC Engine (`Zyren-AI-Dev-Team-I`) | Generation 2: Hardware-Constrained Chassis (`Zyren-NeMo-Chassis` / `Dual-Brain`) | Generation 4: Production Runtime (**ŽyrenClaw** 5-Agent Topology) |
 |---|---|---|---|
 | **Active Agent Roster** | 17 SDLC Roles + 3 Operational Roles (20 total) | 2 Unified Core Roles (Voice Facade + Reasoning Core) | **5 Agents** (1 Coordinator Hub + 4 Leaf Specialists) |
 | **Orchestration Topology** | Supervisor Star Topology with Parallel DAG Fan-Out / Fan-In | Asynchronous Dual-Brain Switchyard Router | **Strict Hub-and-Spoke** (Zero Peer-to-Peer Mesh) |
 | **Decomposition Strategy** | Horizontal Layer Splitting (PRD → Arch → Coder/UX/DB) | Micro-Kernel Tool Dispatch | **Vertical Feature Slicing** (Cohesive Walking Skeletons) |
-| **Context & Token Overhead** | O(N²) message cascades; >30% semantic degradation across handoffs | Audio stream buffers; bounded single-turn sliding window | **O(N) Hub-and-Spoke**; in-process RRF vector/FTS5 memory (<5MB RAM) with pre-compaction flushing |
+| **Context & Token Overhead** | O(N²) message cascades; >30% semantic degradation across handoffs | Audio stream buffers; bounded single-turn sliding window | **O(N) Hub-and-Spoke**; in-process RRF vector (NVIDIA Nemotron 768D MRL) / FTS5 memory (<5MB RAM) with pre-compaction flushing |
 | **Turnaround Latency Profile** | High Latency (multi-stage sequential deliberation, DAG fan-out synchronization, review bottlenecks) | Low Latency (real-time voice streaming with decoupled execution) | **Rapid Turnaround** (single-pass cohesive slice with immediate in-process verification) |
 | **First-Run Code Execution** | Highly Prone to Failure (frequent link-class bugs, broken module imports, desynchronized DOM IDs) | N/A (Infrastructure chassis & voice prototype) | **Consistently Runnable** (verified runnable Walking Skeleton validated at runtime by Critic) |
 | **Local Infrastructure Footprint** | 1.5GB – 2.5GB RAM (Docker Compose: Postgres, Qdrant, LiteLLM, Jaeger) | <50MB RAM (SQLite WAL, token bucket limiters, AI Workbench) | **<150MB RAM total** (Native Node.js Gateway + embedded `sqlite-vec` sidecar; <5MB for memory store) |
