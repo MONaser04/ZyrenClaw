@@ -433,8 +433,12 @@ Following the completion of the Code Intelligence Engine, the collective address
    - Having empirically validated the vertical topology on canary workloads, the swarm will be tasked with end-to-end scaffolding and maintenance of decoupled full-stack systems: an asynchronous FastAPI backend with PostgreSQL and Redis caching, paired with a modern React/TypeScript frontend with real-time WebSockets.
 2. **SWE-bench Verified / Lite Formal Evaluation:**
    - Subjecting the 5-agent swarm to autonomous multi-file bug resolution across real-world open-source repositories to measure benchmark parity against international SWE-agent leaders.
-3. **Self-Learning Agentic Harnesses:**
-   - Expanding closed-loop harness distillation so the swarm autonomously converts Critic `[BLOCK]` events into durable operational skills in `MEMORY.md`.
+3. **Cross-Repository Meta-Skill Synthesis (Next Horizon):**
+   - Scaling the verified closed-loop memory distillation (*completed in Section 7.2*) from workspace-local memory files into a centralized, cross-repository skill mesh that autonomously propagates hardened design rules across heterogeneous agent fleets.
+
+> [!NOTE]
+> **Milestone Completion Notice:**
+> The original milestone for *Closed-Loop Self-Learning & Heuristic Distillation* (converting Critic `[BLOCK]` events into durable operational rules in `MEMORY.md`) is **100% completed and empirically validated** via the 3D WebGL physics Canary Benchmark documented in [Section 7.2](#72-universal-distributed-memory--autonomous-self-learning-engine-completed--empirically-validated).
 ## 8. Citation & Attribution
 
 If you reference the Žyren architecture, empirical findings, or benchmark methodology in your research or systems engineering:
