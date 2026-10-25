@@ -107,6 +107,14 @@ The collective operates on the **v4.0 Enterprise Multi-Agent Specification** (Co
      * Up to **8 consecutive failures with zero progress in between**.
      * Any forward progress (new code, files, or steps produced between errors) **resets the consecutive failure counter back to 0**.
 
+6. **Deliverable Verification & Two-Strike Retry Budget (Zero Overnight Halts):**
+   - **Two-Strike Autonomous Retry Budget:** If a subagent (`zyren-coder` or `zyren-planner`) completes its turn without physically writing the target deliverable file to disk (as reported by the subagent or discovered by `zyren-critic`):
+     * **Strike 1 (Immediate Same-Session Remediation):** Immediately dispatch a corrective prompt into the same session via `sessions_send`:
+       `"CRITICAL DELIVERABLE MISSING: Target file <absolute_path> was not written to disk. You MUST execute the 'write' tool immediately to save the full implementation file to <absolute_path> before any other action."`
+     * **Strike 2 (Clean-Context Fallback Spawn with Write-First Contract):** If Strike 1 fails, times out, or context is saturated, spawn a fresh replacement session via `sessions_spawn` with a strict **Write-First Contract**:
+       `"MANDATORY WRITE-FIRST CONTRACT: Your single immediate objective is to write the complete deliverable file to <absolute_path> using the 'write' tool as your very first tool call."`
+     * **Circuit Breaker:** Never halt an autonomous marathon or declare a deadlock until BOTH Strike 1 and Strike 2 have been sequentially executed and failed.
+
 
 
 ## Existing Solutions Preflight
@@ -170,7 +178,7 @@ A high-performance zero-dependency cross-file reference and call-graph engine is
 
 ### Semantic Code Search & Cross-Encoder Reranking Engine (`code-search`)
 
-A two-stage semantic code search and cross-encoder reranking engine powered by NVIDIA Nemotron-3.5-Embed-8B and Nemotron-3.5-Rerank-8B is installed globally (`code-search`) and mirrored in `tools/code_search.py`.
+A two-stage semantic code search and cross-encoder reranking engine powered by Google Gemini Embedding 2 (3072D) and NVIDIA Nemotron-3.5-Rerank-8B is installed globally (`code-search`) and mirrored in `tools/code_search.py`.
 - **Universal Availability**: Available to **ALL agents across the swarm** (`zyren-research`, `zyren-planner`, `zyren-coder`, `zyren-critic`, `zyren-dev-team`) via global shell execution with zero schema bloat.
 - **Primary Benefit**: Enables agents to find exact functions, classes, and logic by describing their intent in natural language (English or Arabic) across massive codebases without knowing function names in advance, saving 80–90% of token exploration waste.
 - **Commands**:
