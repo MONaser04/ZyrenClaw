@@ -273,6 +273,18 @@ Empirical verification of ŽyrenClaw's codebase and 2026 distributed agent syste
 
 ---
 
+
+#### 4. The "Harness Engineering" Paradigm: Agent = Model + Harness (The Frontier Standard)
+Frontier research in autonomous agent engineering (highlighted by Anthropic's Long-Running Agent architectures and industry harness engineering practices) establishes that **a production agent's capability is determined not by the raw foundation model alone, but by the engineering rigor of its surrounding Execution Harness (Agent = Model + Harness)**:
+* **The Vulnerability of Raw Models:** Unscaffolded LLMs in naive prompt loops inevitably suffer from rapid context rot, session amnesia, runaway ping-pong loops, and "Phantom Completion" (hallucinating deliverables without executing tools).
+* **The Harness as Industrial Infrastructure:** ŽyrenClaw treats the underlying OpenClaw engine (`agentHarnessId: "openclaw"`) as a dedicated, first-class execution harness that orchestrates:
+  1. **Cognitive Decoupling (Brain vs. Hands):** Strictly partitions high-level planning and architectural reasoning (the Coordinator and Planner "Brain") from physical code synthesis and verification (the Coder and Critic "Hands"), dramatically accelerating time-to-first-token (TTFT) and isolating context noise.
+  2. **Deterministic Sandboxing & Tool Governance:** Manages OS process boundaries, execution timeouts, and resource ceilings natively without fragile manual bash wrappers.
+  3. **Event-Sourced Crash Resilience:** Persists every turn, tool call, and decision into SQLite event stores (`transcript_events`, `session_nodes`), enabling autonomous, state-anchored crash recovery (`restartRecovery`) without starting from scratch.
+  4. **Nocturnal Memory Dreaming:** Automatically consolidates raw interaction transcripts into permanent organizational memory during scheduled sleep cycles.
+
+---
+
 ## 4. Evolutions Inside ŽyrenClaw: From 7-Node Intermediate Setup to the 5-Agent Hub-and-Spoke Topology
 
 ### 4.1 Merging the Orchestrator with the Liaison & Pruning Horizontal Specialists
@@ -538,6 +550,13 @@ Following the completion of the Code Intelligence Engine, the collective address
     3. *Critic gate splitting*: Heavy runtime simulations must be partitioned into Phase 1 (syntax/CDN), Phase 2 (static contracts), and Phase 3 (bounded execution with incremental reporting) to eliminate harness stalls.
     4. *Disk-proof protocol for subagent claims*: Coordinator mandates direct disk inspection of code anchors before triggering gate approval.
   * **Long-Term Vector Integration:** These distilled heuristics are automatically ingested into `memory/.dreams/` and indexed via native vector indexing (Google Gemini Embedding 2 3072-dim embeddings), permanently seeding the swarm's spatial reasoning memory so that subsequent 3D modeling tasks inherit these constraints zero-shot without human oversight.
+
+- **The Tri-Stage Autonomous Memory Dreaming Architecture (REM, Light, and Deep Sleep):**
+  While conventional multi-agent frameworks rely on static system prompts or simplistic flat vector lookups, ŽyrenClaw operationalizes a biologically inspired memory consolidation pipeline implemented natively via OpenClaw's Memory Dreaming engine (`dreaming-CcvhOZNc.mjs`):
+  * **REM Sleep (`memory/dreaming/rem/`):** Immediately following active daytime coding marathons, the system executes rapid reflection sweeps over raw trajectory logs (`transcript_events`), distilling behavioral anomalies, unexpected library quirks, and syntax insights into daily ephemeral logs (`rem/YYYY-MM-DD.md`).
+  * **Light Sleep (`memory/dreaming/light/`):** Cross-references candidate lessons across multiple independent sessions, applying rigorous frequency scoring (`minRecallCount`, `minUniqueQueries`) and recency half-life decay to filter out project-specific artifacts and non-reproducible edge cases.
+  * **Deep Sleep (`memory/dreaming/deep/` & Nocturnal Promotion):** Automatically triggered every night at **03:00 AM** (`DEFAULT_MEMORY_DREAMING_FREQUENCY = "0 3 * * *"`) via the managed cron job `Memory Dreaming Promotion`. Deep Sleep evaluates refined candidates against strict promotion thresholds (`minScore`, `maxPromotedSnippetTokens`), permanently etching verified engineering gotchas into `MEMORY.md` and indexing them into the 3072-dimensional vector substrate (`gemini-embedding-2`).
+  * **Zero-Shot Heuristic Inheritance:** When the swarm wakes up and initializes a fresh morning build, the subagents automatically query `memory.search` and inherit these distilled operational rules zero-shot—permanently preventing recurring regressions without human oversight.
 
 ### 7.3 Native Windows OS & GUI Automation via Microsoft UFO (Architectural Status & Standby)
 - **Integration Foundation:** The architectural bridge and execution harness (`projects/ufo-automation/` and `live_ufo_bridge.py`) connecting ŽyrenClaw with **Microsoft UFO (UI-Focused Agent)** have been successfully established, enabling Windows UI Automation (UIA) tree parsing and desktop control.
